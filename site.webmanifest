@@ -1,0 +1,8 @@
+{
+  "name": "Studio Chenille",
+  "short_name": "SC",
+  "theme_color": "#B8926A",
+  "background_color": "#FDFBF7",
+  "display": "standalone",
+  "start_url": "/"
+}
