@@ -4,18 +4,23 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- Preloader ---
+    // --- Preloader (homepage only) ---
     const preloader = document.getElementById('preloader');
-    window.addEventListener('load', () => {
-        setTimeout(() => {
-            preloader.classList.add('loaded');
-        }, 2200); // Wait for SC logo draw animation
-    });
+    if (preloader) {
+        const path = window.location.pathname;
+        const isHomepage = path === '/' || path.endsWith('/index.html') ||
+                           path.endsWith('/studio-interior/') ||
+                           path.endsWith('/studio-interior/index.html');
 
-    // Fallback: hide preloader after 4s max
-    setTimeout(() => {
-        preloader.classList.add('loaded');
-    }, 4000);
+        if (isHomepage) {
+            window.addEventListener('load', () => {
+                setTimeout(() => preloader.classList.add('loaded'), 2200);
+            });
+            setTimeout(() => preloader.classList.add('loaded'), 4000);
+        } else {
+            preloader.classList.add('loaded');
+        }
+    }
 
     // --- Header Scroll ---
     const header = document.getElementById('header');
