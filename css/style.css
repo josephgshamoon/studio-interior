@@ -1614,21 +1614,18 @@ input, textarea, select {
     scroll-margin-top: 80px;
 }
 
-/* --- Placeholder Images (remove when real images added) --- */
-.portfolio-image img[src*="portfolio"],
-.about-image-wrapper img[src*="about"],
+/* --- Hero Background Image --- */
 .hero-bg {
-    background: linear-gradient(135deg, #C4B5A4, #8C7B6B, #6B5D50);
+    background: url('https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=1920&q=80') center/cover no-repeat;
 }
 
-/* When no hero image, use gradient */
-.hero-bg {
-    background: linear-gradient(135deg,
-        #2C2420 0%,
-        #3D3530 30%,
-        #4A3F38 60%,
-        #2C2420 100%
-    );
+/* Fallback gradient if image fails to load */
+.hero-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #2C2420, #3D3530, #4A3F38, #2C2420);
+    z-index: -1;
 }
 
 /* --- Nav Logo Mark --- */
