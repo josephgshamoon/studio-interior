@@ -1,0 +1,541 @@
+/* ============================================
+   STUDIO CHENILLE — Premium Visual Effects
+   ============================================ */
+
+/* --- 1. Film Grain Texture Overlay --- */
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    pointer-events: none;
+    opacity: 0;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    animation: grainFadeIn 2s ease 2.5s forwards;
+}
+
+@keyframes grainFadeIn {
+    to { opacity: 0.035; }
+}
+
+[data-theme="dark"] body::after {
+    opacity: 0.05;
+    mix-blend-mode: soft-light;
+}
+
+/* --- 2. Scroll Progress Indicator --- */
+.scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-accent-dark), var(--color-accent), var(--color-accent-light));
+    z-index: 10001;
+    transform-origin: left;
+    transform: scaleX(0);
+    will-change: transform;
+    pointer-events: none;
+}
+
+/* --- 3. Custom Cursor --- */
+.custom-cursor {
+    position: fixed;
+    width: 40px;
+    height: 40px;
+    border: 1.5px solid var(--color-accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+    transition: opacity 0.3s ease, transform 0.3s ease, width 0.3s ease, height 0.3s ease, border-color 0.3s ease;
+    mix-blend-mode: difference;
+    will-change: transform;
+}
+
+.custom-cursor.visible {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.custom-cursor.hover {
+    width: 80px;
+    height: 80px;
+    border-color: var(--color-accent-light);
+    background: rgba(184, 146, 106, 0.08);
+}
+
+.custom-cursor.hover::after {
+    content: 'View';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-accent-light);
+    white-space: nowrap;
+}
+
+/* --- 4. Portfolio Wipe Reveal --- */
+.portfolio-image::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--color-accent);
+    z-index: 3;
+    transform: scaleX(0);
+    transform-origin: left;
+    pointer-events: none;
+}
+
+.portfolio-item.wipe-reveal .portfolio-image::before {
+    animation: goldWipe 1.2s var(--ease-in-out) forwards;
+}
+
+.portfolio-item.wipe-reveal .portfolio-image img {
+    animation: imageReveal 0.01s linear 0.6s forwards;
+}
+
+.portfolio-item .portfolio-image img {
+    opacity: 0;
+}
+
+@keyframes goldWipe {
+    0%   { transform: scaleX(0); transform-origin: left; }
+    45%  { transform: scaleX(1); transform-origin: left; }
+    55%  { transform: scaleX(1); transform-origin: right; }
+    100% { transform: scaleX(0); transform-origin: right; }
+}
+
+@keyframes imageReveal {
+    to { opacity: 1; }
+}
+
+/* --- 5. Blur-Up Image Effect --- */
+.blur-up {
+    filter: blur(12px);
+    transform: scale(1.04);
+    transition: filter 1s var(--ease-out), transform 1s var(--ease-out);
+}
+
+.blur-up.loaded {
+    filter: blur(0);
+    transform: scale(1);
+}
+
+/* --- 6. Text Split Animation --- */
+.split-word {
+    display: inline-block;
+    overflow: hidden;
+}
+
+.split-char {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(100%);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    transition-delay: calc(var(--i) * 0.04s);
+}
+
+.split-animated .split-char {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Preserve spaces between words */
+.split-word + .split-word {
+    margin-left: 0.3em;
+}
+
+/* --- 7. Particle Canvas --- */
+.hero-particles {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* --- 8. Portfolio Lightbox --- */
+.lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 10002;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s;
+}
+
+.lightbox.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.lightbox-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(26, 23, 20, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+.lightbox-content {
+    position: relative;
+    max-width: 90vw;
+    max-height: 85vh;
+    z-index: 1;
+    transform: scale(0.95) translateY(20px);
+    transition: transform 0.4s var(--ease-out);
+}
+
+.lightbox.active .lightbox-content {
+    transform: scale(1) translateY(0);
+}
+
+.lightbox-content img {
+    max-width: 100%;
+    max-height: 85vh;
+    object-fit: contain;
+    border-radius: var(--radius-md);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+}
+
+.lightbox-info {
+    position: absolute;
+    bottom: -50px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: rgba(253, 251, 247, 0.7);
+    font-size: 14px;
+}
+
+.lightbox-info h3 {
+    font-family: var(--font-heading);
+    font-size: 20px;
+    color: var(--color-text-inverse);
+    margin-bottom: 4px;
+}
+
+.lightbox-close {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    width: 48px;
+    height: 48px;
+    border: none;
+    background: rgba(253, 251, 247, 0.1);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease;
+}
+
+.lightbox-close:hover {
+    background: rgba(253, 251, 247, 0.2);
+}
+
+.lightbox-close svg {
+    width: 20px;
+    height: 20px;
+    color: var(--color-text-inverse);
+}
+
+.lightbox-nav {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 48px;
+    height: 48px;
+    border: 1px solid rgba(253, 251, 247, 0.2);
+    background: rgba(253, 251, 247, 0.05);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.lightbox-nav:hover {
+    background: rgba(253, 251, 247, 0.15);
+    border-color: rgba(253, 251, 247, 0.4);
+}
+
+.lightbox-nav svg {
+    width: 20px;
+    height: 20px;
+    color: var(--color-text-inverse);
+}
+
+.lightbox-prev { left: 24px; }
+.lightbox-next { right: 24px; }
+
+/* --- 9. Page Transition Overlay --- */
+.page-transition {
+    position: fixed;
+    inset: 0;
+    z-index: 10003;
+    background: var(--color-bg-dark);
+    transform: translateY(100%);
+    transition: transform 0.5s var(--ease-in-out);
+    pointer-events: none;
+}
+
+.page-transition.entering {
+    transform: translateY(0);
+    pointer-events: all;
+}
+
+.page-transition.exiting {
+    transform: translateY(-100%);
+}
+
+/* --- 10. Dark Mode --- */
+:root[data-theme="dark"] {
+    --color-bg: #1A1714;
+    --color-bg-alt: #242019;
+    --color-bg-card: #2C2824;
+    --color-bg-dark: #0E0C0A;
+    --color-text: #FDFBF7;
+    --color-text-light: #B0AAA4;
+    --color-text-muted: #7A746E;
+    --color-text-inverse: #1A1714;
+    --color-border: rgba(253, 251, 247, 0.1);
+    --color-border-light: rgba(253, 251, 247, 0.06);
+    --color-accent-subtle: rgba(184, 146, 106, 0.15);
+}
+
+/* Dark mode specific overrides */
+[data-theme="dark"] .header.scrolled {
+    background: #1A1714;
+    box-shadow: 0 1px 0 rgba(253, 251, 247, 0.06);
+}
+
+[data-theme="dark"] .header:not(.scrolled) .nav-logo-text,
+[data-theme="dark"] .header:not(.scrolled) .nav-link,
+[data-theme="dark"] .header:not(.scrolled) .nav-logo-mark {
+    color: var(--color-text);
+}
+
+[data-theme="dark"] .service-card {
+    background: var(--color-bg-card);
+    border-color: var(--color-border);
+}
+
+[data-theme="dark"] .service-card:hover {
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .contact-form-wrapper {
+    background: var(--color-bg-card);
+    border-color: var(--color-border);
+}
+
+[data-theme="dark"] .form-group input,
+[data-theme="dark"] .form-group textarea,
+[data-theme="dark"] .form-group select {
+    background: var(--color-bg-alt);
+    border-color: var(--color-border);
+    color: var(--color-text);
+}
+
+[data-theme="dark"] .testimonials-cta {
+    background: var(--color-bg-card);
+    border-color: var(--color-border);
+}
+
+[data-theme="dark"] .filter-btn {
+    border-color: var(--color-border);
+    color: var(--color-text-light);
+}
+
+[data-theme="dark"] .cookie-banner {
+    background: #0E0C0A;
+}
+
+[data-theme="dark"] .sticky-cta {
+    background: var(--color-bg-card);
+    border-color: var(--color-border);
+}
+
+[data-theme="dark"] .location-card,
+[data-theme="dark"] .blog-card {
+    background: var(--color-bg-card);
+    border-color: var(--color-border);
+}
+
+/* Dark mode toggle button */
+.dark-mode-toggle {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.3s ease;
+    margin-right: 12px;
+}
+
+.dark-mode-toggle:hover {
+    background: var(--color-accent-subtle);
+}
+
+.dark-mode-toggle svg {
+    width: 18px;
+    height: 18px;
+    color: var(--color-text-light);
+    transition: color 0.3s ease;
+}
+
+.header:not(.scrolled) .dark-mode-toggle svg {
+    color: rgba(253, 251, 247, 0.7);
+}
+
+/* Dark mode — sun icon shown, moon hidden (and vice versa) */
+.dark-mode-toggle .icon-moon { display: block; }
+.dark-mode-toggle .icon-sun { display: none; }
+[data-theme="dark"] .dark-mode-toggle .icon-moon { display: none; }
+[data-theme="dark"] .dark-mode-toggle .icon-sun { display: block; }
+
+/* Smooth transition for theme change */
+body {
+    transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* --- 11. Enhanced Scroll Animations --- */
+[data-animate="scale-in"] {
+    opacity: 0;
+    transform: scale(0.92);
+}
+
+[data-animate="scale-in"].animated {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* --- 12. Magnetic Button Hover Zone --- */
+.btn-magnetic {
+    transition: transform 0.3s var(--ease-out);
+}
+
+/* --- 13. Neighbours Section --- */
+.neighbours-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-top: 40px;
+}
+
+.neighbour-card {
+    text-align: center;
+    padding: 32px 20px;
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-medium);
+}
+
+.neighbour-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
+    border-color: var(--color-accent-subtle);
+}
+
+.neighbour-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+}
+
+.neighbour-card h3 {
+    font-family: var(--font-heading);
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+
+.neighbour-card p {
+    font-size: 13px;
+    color: var(--color-text-muted);
+}
+
+.neighbour-distance {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin-top: 8px;
+}
+
+@media (max-width: 768px) {
+    .neighbours-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .custom-cursor {
+        display: none !important;
+    }
+
+    .lightbox-nav {
+        width: 40px;
+        height: 40px;
+    }
+
+    .lightbox-prev { left: 12px; }
+    .lightbox-next { right: 12px; }
+}
+
+@media (max-width: 480px) {
+    .neighbours-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* --- Reduced Motion --- */
+@media (prefers-reduced-motion: reduce) {
+    .split-char {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+
+    .portfolio-item .portfolio-image img {
+        opacity: 1 !important;
+    }
+
+    .portfolio-item .portfolio-image::before {
+        display: none !important;
+    }
+
+    .blur-up {
+        filter: none !important;
+        transform: none !important;
+    }
+
+    .page-transition {
+        display: none !important;
+    }
+
+    .scroll-progress {
+        display: none;
+    }
+
+    body::after {
+        display: none;
+    }
+}
