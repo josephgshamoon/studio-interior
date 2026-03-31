@@ -2,148 +2,158 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://studiochenille.com/</loc>
-    <lastmod>2026-03-30</lastmod>
+    <lastmod>2026-03-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://studiochenille.com/about.html</loc>
+    <lastmod>2026-03-31</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://studiochenille.com/contact.html</loc>
+    <lastmod>2026-03-31</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://studiochenille.com/residential-interior-design.html</loc>
-    <lastmod>2026-03-30</lastmod>
+    <lastmod>2026-03-31</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://studiochenille.com/hotel-hospitality-design.html</loc>
-    <lastmod>2026-03-30</lastmod>
+    <lastmod>2026-03-31</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://studiochenille.com/commercial-interior-design.html</loc>
-    <lastmod>2026-03-30</lastmod>
+    <lastmod>2026-03-31</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://studiochenille.com/show-home-design.html</loc>
-    <lastmod>2026-03-30</lastmod>
+    <lastmod>2026-03-31</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://studiochenille.com/faq.html</loc>
-    <lastmod>2026-03-30</lastmod>
+    <lastmod>2026-03-31</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://studiochenille.com/areas-we-serve.html</loc>
+    <lastmod>2026-03-31</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://studiochenille.com/interior-design-ascot.html</loc>
+    <lastmod>2026-03-31</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://studiochenille.com/interior-design-windsor.html</loc>
+    <lastmod>2026-03-31</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://studiochenille.com/interior-design-sunningdale.html</loc>
+    <lastmod>2026-03-31</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://studiochenille.com/interior-design-bracknell.html</loc>
+    <lastmod>2026-03-31</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://studiochenille.com/interior-design-maidenhead.html</loc>
+    <lastmod>2026-03-31</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://studiochenille.com/interior-design-wokingham.html</loc>
+    <lastmod>2026-03-31</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://studiochenille.com/interior-design-virginia-water.html</loc>
+    <lastmod>2026-03-31</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://studiochenille.com/interior-design-weybridge.html</loc>
+    <lastmod>2026-03-31</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://studiochenille.com/interior-design-esher.html</loc>
+    <lastmod>2026-03-31</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://studiochenille.com/interior-design-cobham.html</loc>
+    <lastmod>2026-03-31</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://studiochenille.com/interior-design-oxshott.html</loc>
+    <lastmod>2026-03-31</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://studiochenille.com/interior-design-guildford.html</loc>
+    <lastmod>2026-03-31</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://studiochenille.com/interior-design-walton-on-thames.html</loc>
+    <lastmod>2026-03-31</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://studiochenille.com/interior-design-chobham.html</loc>
+    <lastmod>2026-03-31</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://studiochenille.com/interior-design-beaconsfield.html</loc>
+    <lastmod>2026-03-31</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://studiochenille.com/interior-design-gerrards-cross.html</loc>
+    <lastmod>2026-03-31</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://studiochenille.com/interior-design-marlow.html</loc>
+    <lastmod>2026-03-31</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://studiochenille.com/interior-design-chelsea.html</loc>
+    <lastmod>2026-03-31</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://studiochenille.com/interior-design-kensington.html</loc>
+    <lastmod>2026-03-31</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://studiochenille.com/interior-design-mayfair.html</loc>
+    <lastmod>2026-03-31</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://studiochenille.com/interior-design-belgravia.html</loc>
+    <lastmod>2026-03-31</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://studiochenille.com/privacy-policy.html</loc>
-    <lastmod>2026-03-30</lastmod>
+    <lastmod>2026-03-31</lastmod>
     <priority>0.3</priority>
-  </url>
-  <url>
-    <loc>https://studiochenille.com/areas-we-serve.html</loc>
-    <lastmod>2026-03-30</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://studiochenille.com/areas/ascot.html</loc>
-    <lastmod>2026-03-30</lastmod>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://studiochenille.com/areas/windsor.html</loc>
-    <lastmod>2026-03-30</lastmod>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://studiochenille.com/areas/sunningdale.html</loc>
-    <lastmod>2026-03-30</lastmod>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://studiochenille.com/areas/bracknell.html</loc>
-    <lastmod>2026-03-30</lastmod>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://studiochenille.com/areas/maidenhead.html</loc>
-    <lastmod>2026-03-30</lastmod>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://studiochenille.com/areas/wokingham.html</loc>
-    <lastmod>2026-03-30</lastmod>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://studiochenille.com/areas/virginia-water.html</loc>
-    <lastmod>2026-03-30</lastmod>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://studiochenille.com/areas/weybridge.html</loc>
-    <lastmod>2026-03-30</lastmod>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://studiochenille.com/areas/esher.html</loc>
-    <lastmod>2026-03-30</lastmod>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://studiochenille.com/areas/cobham.html</loc>
-    <lastmod>2026-03-30</lastmod>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://studiochenille.com/areas/oxshott.html</loc>
-    <lastmod>2026-03-30</lastmod>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://studiochenille.com/areas/guildford.html</loc>
-    <lastmod>2026-03-30</lastmod>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://studiochenille.com/areas/walton-on-thames.html</loc>
-    <lastmod>2026-03-30</lastmod>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://studiochenille.com/areas/chobham.html</loc>
-    <lastmod>2026-03-30</lastmod>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://studiochenille.com/areas/beaconsfield.html</loc>
-    <lastmod>2026-03-30</lastmod>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://studiochenille.com/areas/gerrards-cross.html</loc>
-    <lastmod>2026-03-30</lastmod>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://studiochenille.com/areas/marlow.html</loc>
-    <lastmod>2026-03-30</lastmod>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://studiochenille.com/areas/chelsea.html</loc>
-    <lastmod>2026-03-30</lastmod>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://studiochenille.com/areas/kensington.html</loc>
-    <lastmod>2026-03-30</lastmod>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://studiochenille.com/areas/mayfair.html</loc>
-    <lastmod>2026-03-30</lastmod>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://studiochenille.com/areas/belgravia.html</loc>
-    <lastmod>2026-03-30</lastmod>
-    <priority>0.6</priority>
   </url>
 </urlset>
