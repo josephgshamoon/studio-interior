@@ -219,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- Contact Form ---
+    // --- Contact Form (sends directly via Formspree) ---
     const contactForm = document.getElementById('contactForm');
     if (contactForm) {
         contactForm.addEventListener('submit', (e) => {
@@ -231,19 +231,31 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.disabled = true;
 
             const formData = new FormData(contactForm);
-            const data = {};
-            formData.forEach((value, key) => data[key] = value);
 
-            const subject = `New Enquiry from ${data.firstName} ${data.lastName}`;
-            const body = `Name: ${data.firstName} ${data.lastName}\nEmail: ${data.email}\nPhone: ${data.phone || 'Not provided'}\nProject Type: ${data.projectType || 'Not specified'}\n\nMessage:\n${data.message}`;
-
-            window.location.href = `mailto:info@studiochenille.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-                contactForm.reset();
-            }, 2000);
+            fetch(contactForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: { 'Accept': 'application/json' }
+            })
+            .then(response => {
+                if (response.ok) {
+                    btn.innerHTML = '<span>Sent Successfully!</span>';
+                    contactForm.reset();
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    }, 3000);
+                } else {
+                    throw new Error('Form submission failed');
+                }
+            })
+            .catch(() => {
+                btn.innerHTML = '<span>Error — Please call us</span>';
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }, 3000);
+            });
         });
     }
 
