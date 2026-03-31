@@ -1822,7 +1822,9 @@ a.service-card {
     }
 
     .whatsapp-btn {
-        bottom: 80px;
+        bottom: 76px;
+        right: 16px;
+        z-index: 901;
     }
 }
 
