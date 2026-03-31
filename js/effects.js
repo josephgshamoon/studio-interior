@@ -45,43 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
         aboutImg.style.transform = 'scale(1.05)';
     }
 
-    // --- Custom Cursor ---
-    if (hasHover && !prefersReducedMotion) {
-        const cursor = document.createElement('div');
-        cursor.className = 'custom-cursor';
-        document.body.appendChild(cursor);
-
-        let cursorX = 0, cursorY = 0, currentX = 0, currentY = 0;
-
-        document.addEventListener('mousemove', (e) => {
-            cursorX = e.clientX;
-            cursorY = e.clientY;
-            if (!cursor.classList.contains('visible')) {
-                cursor.classList.add('visible');
-            }
-        });
-
-        // Lerp loop for smooth trailing
-        function animateCursor() {
-            currentX += (cursorX - currentX) * 0.15;
-            currentY += (cursorY - currentY) * 0.15;
-            cursor.style.left = currentX + 'px';
-            cursor.style.top = currentY + 'px';
-            requestAnimationFrame(animateCursor);
-        }
-        animateCursor();
-
-        // Portfolio hover — enlarge cursor
-        document.querySelectorAll('.portfolio-image').forEach(el => {
-            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
-            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
-        });
-
-        // Hide cursor when leaving window
-        document.addEventListener('mouseleave', () => cursor.classList.remove('visible'));
-        document.addEventListener('mouseenter', () => cursor.classList.add('visible'));
-    }
-
     // --- Portfolio Gold Wipe Reveal ---
     if (!prefersReducedMotion) {
         const wipeObserver = new IntersectionObserver((entries) => {
@@ -197,83 +160,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, delay);
     }
 
-    // --- Golden Particles on Hero ---
-    const hero = document.querySelector('.hero');
-    if (hero && !prefersReducedMotion) {
-        const canvas = document.createElement('canvas');
-        canvas.className = 'hero-particles';
-        hero.insertBefore(canvas, hero.firstChild.nextSibling);
-        const ctx = canvas.getContext('2d');
-
-        let particles = [];
-        let animFrame;
-        let isVisible = true;
-        const particleCount = window.innerWidth < 768 ? 18 : 40;
-
-        function resize() {
-            canvas.width = hero.offsetWidth;
-            canvas.height = hero.offsetHeight;
-        }
-        resize();
-        window.addEventListener('resize', resize);
-
-        function createParticle() {
-            return {
-                x: Math.random() * canvas.width,
-                y: canvas.height + Math.random() * 50,
-                size: Math.random() * 2.5 + 0.5,
-                speedY: -(Math.random() * 0.4 + 0.15),
-                drift: Math.random() * 2 * Math.PI,
-                driftSpeed: Math.random() * 0.003 + 0.001,
-                driftAmount: Math.random() * 30 + 10,
-                opacity: Math.random() * 0.4 + 0.1,
-                fadeSpeed: Math.random() * 0.002 + 0.001
-            };
-        }
-
-        for (let i = 0; i < particleCount; i++) {
-            const p = createParticle();
-            p.y = Math.random() * canvas.height; // Start distributed
-            particles.push(p);
-        }
-
-        function drawParticles() {
-            if (!isVisible) return;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            particles.forEach((p, i) => {
-                p.y += p.speedY;
-                p.drift += p.driftSpeed;
-                p.opacity += p.fadeSpeed;
-
-                // Fade in and out
-                if (p.opacity > 0.5) p.fadeSpeed = -Math.abs(p.fadeSpeed);
-                if (p.opacity < 0.05) p.fadeSpeed = Math.abs(p.fadeSpeed);
-
-                const x = p.x + Math.sin(p.drift) * p.driftAmount;
-
-                ctx.beginPath();
-                ctx.arc(x, p.y, p.size, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(212, 184, 150, ${Math.max(0, p.opacity)})`;
-                ctx.fill();
-
-                // Reset particle when it leaves top
-                if (p.y < -10) {
-                    particles[i] = createParticle();
-                }
-            });
-
-            animFrame = requestAnimationFrame(drawParticles);
-        }
-
-        // Only animate when hero is visible
-        const heroObserver = new IntersectionObserver(([entry]) => {
-            isVisible = entry.isIntersecting;
-            if (isVisible && !animFrame) drawParticles();
-        }, { threshold: 0 });
-        heroObserver.observe(hero);
-        drawParticles();
-    }
 
     // --- Portfolio Lightbox ---
     const portfolioImages = document.querySelectorAll('.portfolio-image');
