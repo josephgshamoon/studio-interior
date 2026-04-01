@@ -125,9 +125,9 @@ input, textarea, select {
 }
 
 .preloader-logo-mark {
-    width: 120px;
-    height: 120px;
-    margin: 0 auto 32px;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 24px;
 }
 
 .sc-logo-animated {
@@ -1614,7 +1614,7 @@ input, textarea, select {
 
 /* --- Hero Background Image --- */
 .hero-bg {
-    background: url('https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=1920&q=80') center/cover no-repeat;
+    background: url('../images/hero-bg.jpg') center/cover no-repeat;
 }
 
 /* Fallback gradient if image fails to load */
