@@ -125,9 +125,9 @@ input, textarea, select {
 }
 
 .preloader-logo-mark {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto 24px;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 32px;
 }
 
 .sc-logo-animated {
@@ -1822,9 +1822,9 @@ a.service-card {
     }
 
     .whatsapp-btn {
-        bottom: 76px;
+        bottom: 90px;
         right: 16px;
-        z-index: 901;
+        z-index: 950;
     }
 }
 
