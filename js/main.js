@@ -259,15 +259,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Parallax Effect on Hero ---
-    const heroBg = document.querySelector('.hero-bg');
-    if (heroBg) {
-        window.addEventListener('scroll', () => {
-            const scrolled = window.scrollY;
-            if (scrolled < window.innerHeight) {
-                heroBg.style.transform = `scale(1.05) translateY(${scrolled * 0.3}px)`;
-            }
-        }, { passive: true });
+    // --- Hero Slideshow ---
+    const heroSlides = document.querySelectorAll('.hero-slide');
+    if (heroSlides.length > 1) {
+        let currentHeroSlide = 0;
+        setInterval(() => {
+            heroSlides[currentHeroSlide].classList.remove('active');
+            currentHeroSlide = (currentHeroSlide + 1) % heroSlides.length;
+            heroSlides[currentHeroSlide].classList.add('active');
+        }, 5000);
     }
 
     // --- Active nav link on scroll ---
