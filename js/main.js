@@ -126,23 +126,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const filterBtns = document.querySelectorAll('.filter-btn');
     const portfolioItems = document.querySelectorAll('.portfolio-item');
 
+    function applyFilter(filter) {
+        portfolioItems.forEach(item => {
+            if (filter === 'all' || item.getAttribute('data-category') === filter) {
+                item.classList.remove('hidden');
+                item.style.animation = 'fadeIn 0.5s ease forwards';
+            } else {
+                item.classList.add('hidden');
+            }
+        });
+    }
+
     filterBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             filterBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-
-            const filter = btn.getAttribute('data-filter');
-
-            portfolioItems.forEach(item => {
-                if (filter === 'all' || item.getAttribute('data-category') === filter) {
-                    item.classList.remove('hidden');
-                    item.style.animation = 'fadeIn 0.5s ease forwards';
-                } else {
-                    item.classList.add('hidden');
-                }
-            });
+            applyFilter(btn.getAttribute('data-filter'));
         });
     });
+
+    // Apply default filter on load (whichever button has .active)
+    const activeBtn = document.querySelector('.filter-btn.active');
+    if (activeBtn) {
+        applyFilter(activeBtn.getAttribute('data-filter'));
+    }
 
     // --- Testimonials Slider ---
     const track = document.getElementById('testimonialTrack');
