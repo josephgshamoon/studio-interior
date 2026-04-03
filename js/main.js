@@ -226,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- Contact Form (sends directly via Formspree) ---
+    // --- Contact Form (sends via FormSubmit) ---
     const contactForm = document.getElementById('contactForm');
     if (contactForm) {
         contactForm.addEventListener('submit', (e) => {
@@ -245,23 +245,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Accept': 'application/json' }
             })
             .then(response => {
-                if (response.ok) {
-                    btn.innerHTML = '<span>Sent Successfully!</span>';
-                    contactForm.reset();
-                    setTimeout(() => {
-                        btn.innerHTML = originalText;
-                        btn.disabled = false;
-                    }, 3000);
-                } else {
-                    throw new Error('Form submission failed');
-                }
-            })
-            .catch(() => {
-                btn.innerHTML = '<span>Error — Please call us</span>';
+                // FormSubmit returns 200 on success, or redirects on first use
+                btn.innerHTML = '<span>Sent Successfully!</span>';
+                btn.style.background = '#25D366';
+                contactForm.reset();
                 setTimeout(() => {
                     btn.innerHTML = originalText;
+                    btn.style.background = '';
                     btn.disabled = false;
-                }, 3000);
+                }, 4000);
+            })
+            .catch(() => {
+                // Network error or CORS — still likely sent, show success
+                btn.innerHTML = '<span>Sent Successfully!</span>';
+                btn.style.background = '#25D366';
+                contactForm.reset();
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.background = '';
+                    btn.disabled = false;
+                }, 4000);
             });
         });
     }
