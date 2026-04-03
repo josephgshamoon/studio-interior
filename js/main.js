@@ -244,28 +244,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: formData,
                 headers: { 'Accept': 'application/json' }
             })
-            .then(response => {
-                // FormSubmit returns 200 on success, or redirects on first use
-                btn.innerHTML = '<span>Sent Successfully!</span>';
-                btn.style.background = '#25D366';
-                contactForm.reset();
-                setTimeout(() => {
-                    btn.innerHTML = originalText;
-                    btn.style.background = '';
-                    btn.disabled = false;
-                }, 4000);
-            })
-            .catch(() => {
-                // Network error or CORS — still likely sent, show success
-                btn.innerHTML = '<span>Sent Successfully!</span>';
-                btn.style.background = '#25D366';
-                contactForm.reset();
-                setTimeout(() => {
-                    btn.innerHTML = originalText;
-                    btn.style.background = '';
-                    btn.disabled = false;
-                }, 4000);
-            });
+            .then(() => showFormSuccess())
+            .catch(() => showFormSuccess());
+
+            function showFormSuccess() {
+                const wrapper = contactForm.closest('.contact-form-wrapper');
+                if (wrapper) {
+                    wrapper.innerHTML = '<div style="text-align:center;padding:60px 20px;"><div style="width:64px;height:64px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div><h3 style="font-family:var(--font-heading);font-size:24px;margin-bottom:12px;">Thank You</h3><p style="color:var(--color-text-light);font-size:15px;line-height:1.7;max-width:360px;margin:0 auto;">Your enquiry has been received. We will be in touch within 24 hours.<br><br>If urgent, call us on <a href="tel:+441344249233" style="color:var(--color-accent);">+44 (0) 1344 249233</a></p></div>';
+                }
+            }
         });
     }
 
