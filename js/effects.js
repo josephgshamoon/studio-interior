@@ -60,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, { threshold: 0.2 });
 
         document.querySelectorAll('.portfolio-item').forEach(item => {
+            item.classList.add('wipe-pending');
             wipeObserver.observe(item);
         });
     } else {
