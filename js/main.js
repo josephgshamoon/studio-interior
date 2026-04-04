@@ -26,7 +26,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const header = document.getElementById('header');
 
     function handleHeaderScroll() {
-        if (window.scrollY > 80) {
+        const heroHeight = window.innerHeight - 100;
+        if (window.scrollY > heroHeight) {
             header.classList.add('scrolled');
         } else {
             header.classList.remove('scrolled');
