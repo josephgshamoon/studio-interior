@@ -314,10 +314,22 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 2500); // Show after preloader
         }
 
+        const updateGtagConsent = (state) => {
+            if (typeof window.gtag === 'function') {
+                window.gtag('consent', 'update', {
+                    ad_storage: state,
+                    ad_user_data: state,
+                    ad_personalization: state,
+                    analytics_storage: state
+                });
+            }
+        };
+
         if (cookieAccept) {
             cookieAccept.addEventListener('click', () => {
                 localStorage.setItem('cookie-consent', 'accepted');
                 cookieBanner.classList.remove('visible');
+                updateGtagConsent('granted');
             });
         }
 
@@ -325,6 +337,7 @@ document.addEventListener('DOMContentLoaded', () => {
             cookieDecline.addEventListener('click', () => {
                 localStorage.setItem('cookie-consent', 'declined');
                 cookieBanner.classList.remove('visible');
+                updateGtagConsent('denied');
             });
         }
     }
