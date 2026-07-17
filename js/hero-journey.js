@@ -78,12 +78,32 @@
         current = current < 0 ? target : lerp(current, target, k);
         if (Math.abs(target - current) < 0.0004) current = target;
         render(current);
-        if (current !== target) {
+        if (current !== target || settleTarget()) {
             rafId = requestAnimationFrame(tick);
         } else {
             rafId = null;
             lastTime = 0;
         }
+    }
+
+    // Resting between two source frames would freeze the crossfade as a
+    // double-exposure ghost — when scrolling goes idle, glide the last
+    // fraction of progress so the scrub settles on one clean frame (the
+    // nearest one that has actually loaded; mobile keeps a coarse set).
+    // The next real scroll event re-reads progress and takes over again.
+    function settleTarget() {
+        if (mode !== 'video' || frameCount < 2) return false;
+        var scale = JOURNEY_END * VIDEO_END; // page progress spanned by the scrub
+        if (target >= scale) return false;   // finale photo covers the canvas
+        var i = Math.round((target / scale) * (frameCount - 1));
+        for (var d = 0; d < frameCount; d++) {
+            if (i - d >= 0 && loaded[i - d]) { i -= d; break; }
+            if (i + d < frameCount && loaded[i + d]) { i += d; break; }
+        }
+        var settled = (i / (frameCount - 1)) * scale;
+        if (Math.abs(settled - target) < 0.00005) return false;
+        target = settled;
+        return true;
     }
 
     function requestRender() {
