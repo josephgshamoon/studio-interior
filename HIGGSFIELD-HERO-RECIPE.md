@@ -10,26 +10,31 @@ to the full cinematic version.
 > models bill too (Nano Banana 1cr, Nano Banana Pro 2cr, Seedream V5 Lite
 > 1cr) — nothing is free at 0 balance.
 >
-> Deployed state (17 July 2026): a 10s desktop take (v2, regenerated with
-> the original video as a Seedance `video_references` motion reference so
-> every window shows English parkland instead of a city skyline, ending on
-> the AI-edited `images/showhome-living-hero.jpg`) plus a 9:16 mobile take.
-> Do NOT run tools/hero-video-to-frames.sh desktop-only without restoring
-> the mobile block in manifest.json afterwards (a desktop-only run
-> rewrites the manifest without it). Whenever frames are replaced, do NOT
-> reuse the same URLs: rename the output directories with a version
-> (e.g. `git mv`-style fresh `frames-v3/` + `frames-mobile-v3/`, delete
-> the old dirs in the same commit) and point both manifest patterns at
-> them. A query-string bump (`?v=N`) is NOT enough: Pages deploys
-> propagate over ~a minute, and a visitor loading during that window
-> gets OLD bytes cached under the NEW query URLs (seen 17 July as
-> old/new flicker at the door transit). Fresh filenames can only 404
-> mid-deploy, which the engine's nearest-loaded fallback hides. Source backups: /home/clawdbot/hero-desktop-v2-source.mp4 and
-> /home/clawdbot/hero-mobile-v2-source.mp4 (mobile v2 regenerated 17 July
-> — same manor as desktop, door opens into a hall, ends on the real
-> kitchen photo; both takes also live in the Higgsfield media library). Desktop source backup:
-> /home/clawdbot/hero-desktop-v2-source.mp4 (also in the Higgsfield media
-> library).
+> Deployed state (17 July 2026): desktop 10s 16:9 take v2 in `frames/`
+> (every window shows English parkland, ends on the AI-edited
+> `images/showhome-living-hero.jpg`); mobile 8s 9:16 take v3 in
+> `frames-mobile-v3/` (through the front door only the panelled hall is
+> visible — the hall bends, no straight sightline to any glazing — and
+> the kitchen's glass doors stay closed, ending on the AI-edited
+> `images/res-kitchen-ascot-hero.jpg`; the portfolio grid keeps both
+> original photos). Source backups in /home/clawdbot/:
+> hero-desktop-v2-source.mp4, hero-mobile-v3-source.mp4 (all takes also
+> in the Higgsfield media library).
+>
+> Regeneration lessons: (1) Do NOT run tools/hero-video-to-frames.sh
+> desktop-only without restoring the mobile block in manifest.json
+> afterwards — a desktop-only run rewrites the manifest without it.
+> (2) Whenever frames are replaced, ship them under a NEW directory name
+> (frames-mobile-v4/ etc., old dir deleted in the same commit) and point
+> the manifest pattern there. A query-string bump is NOT enough: Pages
+> deploys propagate over ~a minute and a visitor in that window caches
+> OLD bytes under the NEW query URLs (seen 17 July as old/new flicker at
+> the door). Fresh filenames can only 404 mid-deploy, which the engine's
+> nearest-loaded fallback hides. (3) Passing an old take as Seedance
+> `video_references` makes its LAYOUT override both the prompt and the
+> end_image — great when only surface content changes (parkland
+> windows), fatal when changing the architecture of the shot (the
+> enclosed-hall regen only worked after dropping the video reference).
 
 ## Settings (higgsfield.ai → Video → Seedance 2.0, or ask Claude)
 
