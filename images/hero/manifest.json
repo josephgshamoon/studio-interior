@@ -7,7 +7,7 @@
     "finale_layer": 0,
     "mobile": {
         "frames": 108,
-        "pattern": "frames-mobile/f-{i}.webp",
+        "pattern": "frames-mobile/f-{i}.webp?v=2",
         "pad": 4,
         "finale_layer": 1
     }
