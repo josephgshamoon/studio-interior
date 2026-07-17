@@ -10,15 +10,16 @@ to the full cinematic version.
 > models bill too (Nano Banana 1cr, Nano Banana Pro 2cr, Seedream V5 Lite
 > 1cr) — nothing is free at 0 balance.
 >
-> Deployed state (17 July 2026): desktop 10s 16:9 take v2 in `frames/`
-> (every window shows English parkland, ends on the AI-edited
-> `images/showhome-living-hero.jpg`); mobile 8s 9:16 take v3 in
-> `frames-mobile-v3/` (through the front door only the panelled hall is
-> visible — the hall bends, no straight sightline to any glazing — and
-> the kitchen's glass doors stay closed, ending on the AI-edited
-> `images/res-kitchen-ascot-hero.jpg`; the portfolio grid keeps both
-> original photos). Source backups in /home/clawdbot/:
-> hero-desktop-v2-source.mp4, hero-mobile-v3-source.mp4 (all takes also
+> Deployed state (17 July 2026): both devices run the "enclosed hall"
+> journey — through the front door only the lantern-lit panelled hall is
+> visible (the hall bends; no straight sightline to any glazing), and
+> every exterior view sits behind closed glass. Desktop 9s 16:9 take v3
+> in `frames-v3/`, ending on the AI-edited parkland living room
+> `images/showhome-living-hero.jpg`; mobile 8s 9:16 take v3 in
+> `frames-mobile-v3/`, ending on the AI-edited closed-bifold kitchen
+> `images/res-kitchen-ascot-hero.jpg`. The portfolio grid keeps both
+> original photos. Source backups in /home/clawdbot/:
+> hero-desktop-v3-source.mp4, hero-mobile-v3-source.mp4 (all takes also
 > in the Higgsfield media library).
 >
 > Regeneration lessons: (1) Do NOT run tools/hero-video-to-frames.sh
