@@ -196,13 +196,18 @@
     flex-wrap: wrap;
 }
 
-/* Non-journey (no JS / reduced motion): show finale actions statically
-   below the brand so the hero still has its CTAs */
-.hero-journey:not(.is-journey) .hero {
+/* Non-journey fallback (no JS / reduced motion / no overflow clip):
+   show finale actions statically below the brand so the hero still has
+   its CTAs. Gated on html.no-js (swapped to .js by an inline head
+   script before first paint) so the CTA can never flash during the
+   moment between page paint and the deferred engine booting — the
+   engine's own bail-outs (reduced motion, no clip support) get their
+   ungated copies below. */
+.no-js .hero-journey:not(.is-journey) .hero {
     flex-direction: column;
 }
 
-.hero-journey:not(.is-journey) .hero-finale {
+.no-js .hero-journey:not(.is-journey) .hero-finale {
     position: static;
     opacity: 1;
     visibility: visible;
@@ -211,9 +216,49 @@
     margin-top: 40px;
 }
 
-.hero-journey:not(.is-journey) .hero-finale-title,
-.hero-journey:not(.is-journey) .hero-finale-sub {
+.no-js .hero-journey:not(.is-journey) .hero-finale-title,
+.no-js .hero-journey:not(.is-journey) .hero-finale-sub {
     display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-journey:not(.is-journey) .hero {
+        flex-direction: column;
+    }
+
+    .hero-journey:not(.is-journey) .hero-finale {
+        position: static;
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        padding: 0;
+        margin-top: 40px;
+    }
+
+    .hero-journey:not(.is-journey) .hero-finale-title,
+    .hero-journey:not(.is-journey) .hero-finale-sub {
+        display: none;
+    }
+}
+
+@supports not (overflow-x: clip) {
+    .hero-journey:not(.is-journey) .hero {
+        flex-direction: column;
+    }
+
+    .hero-journey:not(.is-journey) .hero-finale {
+        position: static;
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        padding: 0;
+        margin-top: 40px;
+    }
+
+    .hero-journey:not(.is-journey) .hero-finale-title,
+    .hero-journey:not(.is-journey) .hero-finale-sub {
+        display: none;
+    }
 }
 
 @media (max-width: 560px) {
