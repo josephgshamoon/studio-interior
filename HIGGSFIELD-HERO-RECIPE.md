@@ -13,16 +13,21 @@ to the full cinematic version.
 
 ## Settings (higgsfield.ai → Video → Seedance 2.0, or ask Claude)
 
-| Setting        | Value |
-|----------------|-------|
-| Model          | Seedance 2.0 |
-| Resolution     | **720p** (this is the unlimited tier — don't pick 1080p/4K) |
-| Duration       | **15 s** |
-| Aspect ratio   | **16:9** |
-| Audio          | Off |
-| End frame      | `showhome-living.jpg` — already in your media library uploads |
-| Image refs     | `res-kitchen-ascot.jpg`, `hotel-reception.jpg` (also in uploads) |
-| Start frame    | none |
+Two videos — the site serves each device its native aspect:
+
+| Setting        | Desktop | Mobile |
+|----------------|---------|--------|
+| Model          | Seedance 2.0 (std) | Seedance 2.0 (std) |
+| Resolution     | 720p | 720p |
+| Duration       | 10–15 s | 8–12 s |
+| Aspect ratio   | **16:9** | **9:16** |
+| Audio          | Off | Off |
+| End frame      | `showhome-living.jpg` | `res-kitchen-ascot.jpg` (portrait) |
+| Image refs     | `res-kitchen-ascot.jpg` | `showhome-living.jpg` |
+
+**Lesson from the first draft:** do NOT include `hotel-reception.jpg` as a
+reference — Seedance planted its receptionist and desk in the finale. Keep
+"completely empty, no people anywhere, no reception desk" in the prompt.
 
 ## Prompt (paste as-is)
 
@@ -59,11 +64,21 @@ If credits allow several takes, choose the one with:
 ## Installing it
 
 ```bash
-# from the repo root, with the downloaded take as hero.mp4
-bash tools/hero-video-to-frames.sh ~/Downloads/hero.mp4
+# from the repo root
+bash tools/hero-video-to-frames.sh desktop-16x9.mp4 mobile-9x16.mp4
 ```
 
-That writes `images/hero/frames/*.webp` + `images/hero/manifest.json`.
-The hero detects the manifest and switches from zoom mode to the video
-scrub automatically — no code changes. To go back to zoom mode, delete
-`images/hero/manifest.json`.
+That writes `images/hero/frames/` (desktop), `images/hero/frames-mobile/`
+(phones) and `manifest.json`. The hero detects the manifest and switches
+from zoom mode to the video scrub automatically — no code changes.
+Landscape screens scrub the 16:9 set and dissolve into the living-room
+photo; portrait screens scrub the 9:16 set and dissolve into the kitchen
+photo. Omit the second video and phones simply keep the zoom-mode hero.
+To revert everything, restore the placeholder manifest (`"frames": 0`).
+
+If a take has a flaw near the end (like the receptionist), trim it before
+building frames — the dissolve hides the junction:
+
+```bash
+ffmpeg -i take.mp4 -t 8.5 -c copy take-trim.mp4
+```

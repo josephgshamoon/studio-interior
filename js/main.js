@@ -4,24 +4,6 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- Preloader (homepage only) ---
-    const preloader = document.getElementById('preloader');
-    if (preloader) {
-        const path = window.location.pathname;
-        const isHomepage = path === '/' || path.endsWith('/index.html') ||
-                           path.endsWith('/studio-interior/') ||
-                           path.endsWith('/studio-interior/index.html');
-
-        if (isHomepage) {
-            window.addEventListener('load', () => {
-                setTimeout(() => preloader.classList.add('loaded'), 2200);
-            });
-            setTimeout(() => preloader.classList.add('loaded'), 4000);
-        } else {
-            preloader.classList.add('loaded');
-        }
-    }
-
     // --- Header Scroll ---
     const header = document.getElementById('header');
     const heroJourney = document.getElementById('heroJourney');
@@ -306,7 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!consent) {
             setTimeout(() => {
                 cookieBanner.classList.add('visible');
-            }, 2500); // Show after preloader
+            }, 1500);
         }
 
         const updateGtagConsent = (state) => {

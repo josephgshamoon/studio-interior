@@ -62,7 +62,7 @@
         var dt = lastTime ? Math.min((now - lastTime) / 1000, 0.05) : 0.016;
         lastTime = now;
         // time-normalised exponential smoothing (~feels like a heavy camera)
-        var k = 1 - Math.exp(-9 * dt);
+        var k = 1 - Math.exp(-7 * dt);
         current = current < 0 ? target : lerp(current, target, k);
         if (Math.abs(target - current) < 0.0004) current = target;
         render(current);
@@ -162,23 +162,42 @@
         canvas.height = Math.round(hero.clientHeight * dpr);
     }
 
-    function drawFrame(index) {
-        // nearest loaded frame at or around the requested index
-        var img = null;
+    function nearestLoaded(index) {
         for (var d = 0; d < frameCount; d++) {
-            if (index - d >= 0 && loaded[index - d]) { img = frames[index - d]; break; }
-            if (index + d < frameCount && loaded[index + d]) { img = frames[index + d]; break; }
+            if (index - d >= 0 && loaded[index - d]) return frames[index - d];
+            if (index + d < frameCount && loaded[index + d]) return frames[index + d];
         }
-        if (!img || !ctx) return;
+        return null;
+    }
+
+    function coverDraw(img) {
         var cw = canvas.width, ch = canvas.height;
         var iw = img.naturalWidth, ih = img.naturalHeight;
-        var s = Math.max(cw / iw, ch / ih); // cover
+        var s = Math.max(cw / iw, ch / ih);
         var dw = iw * s, dh = ih * s;
         ctx.drawImage(img, (cw - dw) / 2, (ch - dh) / 2, dw, dh);
     }
 
+    // Fractional index with a crossfade between neighbouring frames —
+    // hides the stepping between sampled frames so the scrub flows.
+    function drawFrame(x) {
+        if (!ctx) return;
+        var i0 = Math.floor(x);
+        var i1 = Math.min(i0 + 1, frameCount - 1);
+        var frac = x - i0;
+        var a = nearestLoaded(i0);
+        if (!a) return;
+        ctx.globalAlpha = 1;
+        coverDraw(a);
+        if (i1 !== i0 && frac > 0.02 && loaded[i1] && frames[i1] !== a) {
+            ctx.globalAlpha = frac;
+            coverDraw(frames[i1]);
+            ctx.globalAlpha = 1;
+        }
+    }
+
     function renderVideo(p) {
-        drawFrame(Math.round(clamp01(p / VIDEO_END) * (frameCount - 1)));
+        drawFrame(clamp01(p / VIDEO_END) * (frameCount - 1));
         if (finaleLayer) {
             var f = smooth(span(p, PHOTO_IN[0], PHOTO_IN[1]));
             finaleLayer.style.opacity = String(f);
@@ -214,7 +233,7 @@
         }
 
         // pass 1: coarse skeleton so scrubbing works immediately
-        var step = isMobile ? 3 : 6;
+        var step = isMobile ? 2 : 6;
         var pending = 0;
         for (var i = 0; i < frameCount; i += step) { pending++; load(i, done); }
         load(frameCount - 1, done); pending++;
@@ -243,20 +262,29 @@
             .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
             .then(function (manifest) {
                 if (!manifest || !manifest.frames) return; // placeholder manifest — zoom mode stays
+                // Phones get their own portrait frame set — a 16:9-only set
+                // over-crops on a portrait screen, so without one keep zoom mode.
+                var portrait = hero.clientHeight > hero.clientWidth;
+                var variant = manifest;
+                if (portrait) {
+                    if (manifest.mobile && manifest.mobile.frames) variant = manifest.mobile;
+                    else return;
+                }
+                var finaleIndex = variant.finale_layer != null ? variant.finale_layer : 0;
                 var base = manifestUrl.slice(0, manifestUrl.lastIndexOf('/') + 1);
                 ctx = canvas.getContext('2d');
                 sizeCanvas();
                 mode = 'video';
                 canvas.hidden = false;
-                layers.forEach(function (el, i) { el.style.display = i === 0 ? '' : 'none'; });
-                finaleLayer = layers[0] || null;
+                layers.forEach(function (el, i) { el.style.display = i === finaleIndex ? '' : 'none'; });
+                finaleLayer = layers[finaleIndex] || null;
                 if (finaleLayer) {
                     finaleLayer.style.zIndex = '1'; // above the canvas
                     finaleLayer.style.opacity = '0';
                     finaleLayer.style.visibility = 'hidden';
                     finaleLayer.style.transformOrigin = '50% 50%';
                 }
-                loadFrames(manifest, base);
+                loadFrames(variant, base);
                 requestRender();
             })
             .catch(function () { /* no frames yet — zoom mode stays */ });
