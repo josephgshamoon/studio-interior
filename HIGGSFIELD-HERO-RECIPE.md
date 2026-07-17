@@ -16,12 +16,15 @@ to the full cinematic version.
 > the AI-edited `images/showhome-living-hero.jpg`) plus a 9:16 mobile take.
 > Do NOT run tools/hero-video-to-frames.sh desktop-only without restoring
 > the mobile block in manifest.json afterwards (a desktop-only run
-> rewrites the manifest without it). Whenever frames are replaced, also
-> bump the query version in BOTH manifest patterns (e.g.
-> `frames/f-{i}.webp?v=3`) — the script writes them plain, and without a
-> version bump returning visitors mix stale cached frames with new ones
-> (seen as old-content flicker in the scrub; GitHub Pages caches assets
-> ~10 min). Source backups: /home/clawdbot/hero-desktop-v2-source.mp4 and
+> rewrites the manifest without it). Whenever frames are replaced, do NOT
+> reuse the same URLs: rename the output directories with a version
+> (e.g. `git mv`-style fresh `frames-v3/` + `frames-mobile-v3/`, delete
+> the old dirs in the same commit) and point both manifest patterns at
+> them. A query-string bump (`?v=N`) is NOT enough: Pages deploys
+> propagate over ~a minute, and a visitor loading during that window
+> gets OLD bytes cached under the NEW query URLs (seen 17 July as
+> old/new flicker at the door transit). Fresh filenames can only 404
+> mid-deploy, which the engine's nearest-loaded fallback hides. Source backups: /home/clawdbot/hero-desktop-v2-source.mp4 and
 > /home/clawdbot/hero-mobile-v2-source.mp4 (mobile v2 regenerated 17 July
 > — same manor as desktop, door opens into a hall, ends on the real
 > kitchen photo; both takes also live in the Higgsfield media library). Desktop source backup:
