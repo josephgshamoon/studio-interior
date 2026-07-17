@@ -105,9 +105,9 @@
             vignette.style.opacity = String(0.9 * smooth(span(p, 0.72, 0.96)));
         }
 
-        // Finale: arrival statement + CTAs
+        // Finale: arrival statement + CTAs — lands after the room resolves
         if (finale) {
-            var fin = smooth(span(p, 0.8, 0.94));
+            var fin = smooth(span(p, 0.86, 0.97));
             finale.style.opacity = String(fin);
             finale.style.transform = 'translateY(' + (34 * (1 - fin)) + 'px)';
             finale.classList.toggle('is-live', fin > 0.6);
@@ -150,10 +150,12 @@
     var finaleLayer = null; // real portfolio photo the video dissolves into
 
     // The video scrubs over the first part of the pin, then dissolves into
-    // the real portfolio photo (layer 1) — the journey always lands on
-    // Studio Chenille's actual work, whatever the AI footage ends on.
-    var VIDEO_END = 0.88;
-    var PHOTO_IN = [0.78, 0.92];
+    // the real portfolio photo — the journey always lands on Studio
+    // Chenille's actual work, whatever the AI footage ends on. The video
+    // keeps moving until fully covered (never visibly freezes) and the
+    // photo continues the same forward push, easing to rest at the end.
+    var VIDEO_END = 0.9;
+    var PHOTO_IN = [0.72, 0.88];
 
     function sizeCanvas() {
         if (!canvas) return;
@@ -200,8 +202,11 @@
         drawFrame(clamp01(p / VIDEO_END) * (frameCount - 1));
         if (finaleLayer) {
             var f = smooth(span(p, PHOTO_IN[0], PHOTO_IN[1]));
+            // match the video's forward motion, decelerating to a stop
+            var drift = span(p, PHOTO_IN[0], 1);
+            drift = 1 - (1 - drift) * (1 - drift) * (1 - drift);
             finaleLayer.style.opacity = String(f);
-            finaleLayer.style.transform = 'scale(' + (1.08 - 0.08 * f).toFixed(4) + ')';
+            finaleLayer.style.transform = 'scale(' + (1 + 0.07 * drift).toFixed(4) + ')';
             finaleLayer.style.visibility = f <= 0.001 ? 'hidden' : 'visible';
         }
     }
