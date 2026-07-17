@@ -6,10 +6,20 @@ to the full cinematic version.
 
 > Billing reality (checked 17 July 2026): there is NO unlimited Seedance on
 > the Plus plan — Seedance 2.0 bills credits both in the app and via Claude
-> (~4.5 credits/second at 720p std). The plan's "unlimited" perks cover other
-> models (Seedream, Flux, Nano Banana images; a Kling 3.0 promo that ended
-> 14 July). A 5s draft was generated on 17 July with the last credits; this
-> recipe is for the full 15s version once credits are topped up.
+> (~4.5 credits/second at 720p std). Via the Claude MCP connector, image
+> models bill too (Nano Banana 1cr, Nano Banana Pro 2cr, Seedream V5 Lite
+> 1cr) — nothing is free at 0 balance.
+>
+> Deployed state (17 July 2026): a 10s desktop take (v2, regenerated with
+> the original video as a Seedance `video_references` motion reference so
+> every window shows English parkland instead of a city skyline, ending on
+> the AI-edited `images/showhome-living-hero.jpg`) plus a 9:16 mobile take.
+> The mobile source video no longer exists on disk — do NOT run
+> tools/hero-video-to-frames.sh desktop-only without restoring the mobile
+> block in manifest.json afterwards (a desktop-only run rewrites the
+> manifest without it). Desktop source backup:
+> /home/clawdbot/hero-desktop-v2-source.mp4 (also in the Higgsfield media
+> library).
 
 ## Settings (higgsfield.ai → Video → Seedance 2.0, or ask Claude)
 
