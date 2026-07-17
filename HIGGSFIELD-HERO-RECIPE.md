@@ -26,9 +26,7 @@ to the full cinematic version.
 > imposes the reference's layout — poison when changing the shot's
 > architecture, but exactly right when the reference IS the target (v4
 > succeeded first try with the clean mobile take as reference).
-> Unreferenced leftovers kept in-repo pending owner sign-off to delete:
-> `frames-v3/` (flawed door take) and `images/showhome-living-hero.jpg`
-> (parkland living room, no longer a finale). hero-journey.js since v11
+> hero-journey.js since v11
 > renders portrait footage on landscape stages contain-fit over an
 > ambient blur — dormant now, but it activates automatically if a
 > portrait-only manifest is ever served again. Source backups in
