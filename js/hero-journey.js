@@ -173,6 +173,8 @@
         dpr = Math.min(window.devicePixelRatio || 1, 2);
         canvas.width = Math.round(hero.clientWidth * dpr);
         canvas.height = Math.round(hero.clientHeight * dpr);
+        // setting width/height resets context state — restore quality
+        if (ctx) ctx.imageSmoothingQuality = 'high';
     }
 
     function nearestLoaded(index) {
@@ -198,6 +200,7 @@
         var i0 = Math.floor(x);
         var i1 = Math.min(i0 + 1, frameCount - 1);
         var frac = x - i0;
+        if (frac > 0.98 && loaded[i1]) { i0 = i1; frac = 0; }
         var a = nearestLoaded(i0);
         if (!a) return;
         ctx.globalAlpha = 1;
@@ -234,16 +237,23 @@
             return base + manifest.pattern.replace('{i}', n);
         }
 
-        function load(i, then) {
+        function load(i, then, priority) {
             if (frames[i]) { if (then) then(); return; }
             var img = new Image();
             img.decoding = 'async';
-            img.onload = function () {
+            if (priority && 'fetchPriority' in img) img.fetchPriority = priority;
+            // mark loaded only once decoded — drawing an undecoded image
+            // forces a synchronous decode on the main thread (jank)
+            function ready() {
+                if (loaded[i]) return;
                 loaded[i] = true;
-                // repaint if this frame is near the current position
                 var want = Math.round(current * (frameCount - 1));
                 if (Math.abs(want - i) < 8) requestRender();
                 if (then) then();
+            }
+            img.onload = function () {
+                if (img.decode) img.decode().then(ready, ready);
+                else ready();
             };
             img.src = src(i);
             frames[i] = img;
@@ -252,14 +262,14 @@
         // pass 1: coarse skeleton so scrubbing works immediately
         var step = isMobile ? 2 : 6;
         var pending = 0;
-        for (var i = 0; i < frameCount; i += step) { pending++; load(i, done); }
+        for (var i = 0; i < frameCount; i += step) { pending++; load(i, done, i === 0 ? 'high' : undefined); }
         load(frameCount - 1, done); pending++;
 
         function done() {
             if (--pending > 0) return;
             if (isMobile) return; // mobile keeps the light coarse set
             // pass 2: fill everything for a fully fluid scrub
-            for (var j = 0; j < frameCount; j++) load(j, null);
+            for (var j = 0; j < frameCount; j++) load(j, null, 'low');
         }
     }
 
@@ -289,7 +299,9 @@
                 }
                 var finaleIndex = variant.finale_layer != null ? variant.finale_layer : 0;
                 var base = manifestUrl.slice(0, manifestUrl.lastIndexOf('/') + 1);
-                ctx = canvas.getContext('2d');
+                // opaque context: the canvas is always fully covered, so
+                // skipping the alpha channel saves compositing every frame
+                ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
                 sizeCanvas();
                 mode = 'video';
                 canvas.hidden = false;
@@ -300,6 +312,9 @@
                     finaleLayer.style.opacity = '0';
                     finaleLayer.style.visibility = 'hidden';
                     finaleLayer.style.transformOrigin = '50% 50%';
+                    // pre-decode so the dissolve doesn't jank on first paint
+                    var finaleImg = finaleLayer.querySelector('img');
+                    if (finaleImg && finaleImg.decode) finaleImg.decode().catch(function () {});
                 }
                 loadFrames(variant, base);
                 requestRender();

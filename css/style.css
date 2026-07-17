@@ -705,9 +705,16 @@ input, textarea, select {
 }
 
 .services-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    /* flex, not grid: a partial last row (e.g. 2 cards under 3)
+       centres instead of leaving a hole on the right */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 24px;
+}
+
+.services-grid .service-card {
+    flex: 0 1 calc((100% - 48px) / 3);
 }
 
 .service-card {
@@ -1420,8 +1427,8 @@ input, textarea, select {
         left: 20px;
     }
 
-    .services-grid {
-        grid-template-columns: repeat(2, 1fr);
+    .services-grid .service-card {
+        flex-basis: calc((100% - 24px) / 2);
     }
 
     .portfolio-grid {
@@ -1488,8 +1495,8 @@ input, textarea, select {
         text-align: left;
     }
 
-    .services-grid {
-        grid-template-columns: 1fr;
+    .services-grid .service-card {
+        flex-basis: 100%;
     }
 
     .portfolio-grid {
