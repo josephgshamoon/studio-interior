@@ -30,6 +30,17 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('scroll', handleHeaderScroll, { passive: true });
     handleHeaderScroll();
 
+    // --- Logo click on the homepage: scroll to top, don't reload ---
+    document.querySelectorAll('.nav-logo').forEach(logo => {
+        logo.addEventListener('click', (e) => {
+            const path = window.location.pathname;
+            if (path === '/' || path.endsWith('/index.html')) {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        });
+    });
+
     // --- Mobile Navigation ---
     const navToggle = document.getElementById('navToggle');
     const mobileMenu = document.getElementById('mobileMenu');

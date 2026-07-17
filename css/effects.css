@@ -286,26 +286,6 @@ body::after {
 .lightbox-prev { left: 24px; }
 .lightbox-next { right: 24px; }
 
-/* --- 9. Page Transition Overlay --- */
-.page-transition {
-    position: fixed;
-    inset: 0;
-    z-index: 10003;
-    background: var(--color-bg-dark);
-    transform: translateY(100%);
-    transition: transform 0.5s var(--ease-in-out);
-    pointer-events: none;
-}
-
-.page-transition.entering {
-    transform: translateY(0);
-    pointer-events: all;
-}
-
-.page-transition.exiting {
-    transform: translateY(-100%);
-}
-
 /* --- 10. Dark Mode --- */
 :root[data-theme="dark"] {
     --color-bg: #1A1714;
@@ -547,10 +527,6 @@ body {
     .blur-up {
         filter: none !important;
         transform: none !important;
-    }
-
-    .page-transition {
-        display: none !important;
     }
 
     .scroll-progress {

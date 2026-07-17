@@ -15,12 +15,14 @@
 }
 
 .hero-journey.is-journey {
-    height: 320vh;
+    /* the journey completes ~80% in; the rest is a hold zone that
+       absorbs scroll momentum so the finale isn't overshot */
+    height: 380vh;
 }
 
 @media (max-width: 768px) {
     .hero-journey.is-journey {
-        height: 280vh;
+        height: 340vh;
     }
 }
 

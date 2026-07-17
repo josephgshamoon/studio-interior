@@ -275,7 +275,12 @@
 
     /* ---------- render dispatch ---------- */
 
+    // The choreography completes at this fraction of the pin; the
+    // remainder is a hold plateau so momentum can't overshoot the finale.
+    var JOURNEY_END = 0.8;
+
     function render(p) {
+        p = clamp01(p / JOURNEY_END);
         if (mode === 'video') renderVideo(p);
         else renderZoom(p);
         renderText(p);

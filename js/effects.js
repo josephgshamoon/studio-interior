@@ -280,40 +280,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Page Transitions ---
-    if (!prefersReducedMotion) {
-        const transition = document.createElement('div');
-        transition.className = 'page-transition';
-        document.body.appendChild(transition);
-
-        // Fade in on page load
-        if (transition.classList.contains('entering')) {
-            setTimeout(() => {
-                transition.classList.remove('entering');
-                transition.classList.add('exiting');
-                setTimeout(() => transition.classList.remove('exiting'), 500);
-            }, 100);
-        }
-
-        // Intercept internal links
-        document.addEventListener('click', (e) => {
-            const link = e.target.closest('a');
-            if (!link) return;
-
-            const href = link.getAttribute('href');
-            if (!href) return;
-
-            // Skip anchors, external links, mailto, tel, same page
-            if (href.startsWith('#') || href.startsWith('mailto:') ||
-                href.startsWith('tel:') || href.startsWith('http') ||
-                href.startsWith('wa.me') || link.target === '_blank') return;
-
-            e.preventDefault();
-            transition.classList.add('entering');
-            setTimeout(() => {
-                window.location.href = href;
-            }, 450);
-        });
-    }
-
 });
