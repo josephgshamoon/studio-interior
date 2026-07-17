@@ -10,22 +10,30 @@ to the full cinematic version.
 > models bill too (Nano Banana 1cr, Nano Banana Pro 2cr, Seedream V5 Lite
 > 1cr) — nothing is free at 0 balance.
 >
-> Deployed state (17 July 2026, user decision): ALL devices serve the
-> mobile 8s 9:16 "enclosed hall" take from `frames-mobile-v3/` — manor,
-> lantern-lit panelled hall (bends left, no sightline to glazing),
-> kitchen with glass closed, ending on the AI-edited
-> `images/res-kitchen-ascot-hero.jpg` (finale_layer 1 in the top-level
-> manifest too). Widescreen cover-crops the portrait frames; the footage
-> has enough headroom that this reads well, at the cost of some softness
-> (720px source ×2) and cropped tops at a few beats. The 16:9 take v3 in
-> `frames-v3/` is UNREFERENCED but kept in the repo — it has a flaw (the
-> front door visibly closes itself and re-opens around f0078–f0096)
-> discovered only under dense per-frame QA; do not reinstate it without
-> fixing that. QA lesson: sample every frame of a door transit, not
-> 1fps. The portfolio grid keeps the original photos. Source backups in
-> /home/clawdbot/: hero-desktop-v3-source.mp4 (flawed door),
-> hero-mobile-v3-source.mp4 (all takes also in the Higgsfield media
-> library).
+> Deployed state (17 July 2026): ONE journey, two native takes. Both
+> devices play the same walk — manor, door opens once, lantern-lit
+> panelled hall bending LEFT, open-plan kitchen with the glass doors
+> closed (garden only behind glass). Desktop: 8s 16:9 take v4 in
+> `frames-v4/` (job 7cd2bf23 — generated with the mobile take as
+> `video_references` plus "the door opens once and never moves again";
+> ends on `images/res-kitchen-ascot-hero-wide.jpg`, a 16:9 widening of
+> the kitchen finale). Mobile: 8s 9:16 take v3 in `frames-mobile-v3/`,
+> ending on `images/res-kitchen-ascot-hero.jpg`. finale_layer 0 =
+> wide kitchen (desktop), 1 = portrait kitchen (mobile).
+>
+> QA lessons: sample EVERY frame of a door transit (the v3 desktop
+> take's self-closing door hid between 1fps samples); `video_references`
+> imposes the reference's layout — poison when changing the shot's
+> architecture, but exactly right when the reference IS the target (v4
+> succeeded first try with the clean mobile take as reference).
+> Unreferenced leftovers kept in-repo pending owner sign-off to delete:
+> `frames-v3/` (flawed door take) and `images/showhome-living-hero.jpg`
+> (parkland living room, no longer a finale). hero-journey.js since v11
+> renders portrait footage on landscape stages contain-fit over an
+> ambient blur — dormant now, but it activates automatically if a
+> portrait-only manifest is ever served again. Source backups in
+> /home/clawdbot/: hero-desktop-v4-source.mp4, hero-mobile-v3-source.mp4
+> (all takes also in the Higgsfield media library).
 >
 > Regeneration lessons: (1) Do NOT run tools/hero-video-to-frames.sh
 > desktop-only without restoring the mobile block in manifest.json
