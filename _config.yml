@@ -1,0 +1,6 @@
+# GitHub Pages (Jekyll) — keep internal documentation out of the published site
+exclude:
+  - CLAUDE.md
+  - HIGGSFIELD-HERO-RECIPE.md
+  - GEO-AUDIT-REPORT.md
+  - tools/
