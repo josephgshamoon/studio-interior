@@ -1,0 +1,198 @@
+/* ============================================
+   STUDIO CHENILLE — Hero Journey
+   Scroll-scrubbed "walk into the home" hero.
+   Two engines share this markup:
+     - zoom mode: layered zoom-through of portfolio images (default)
+     - video mode: canvas frame-sequence scrub (images/hero/manifest.json)
+   Without JS (or with prefers-reduced-motion) it renders as a
+   classic full-height static hero.
+   ============================================ */
+
+.hero-journey {
+    position: relative;
+    height: 100vh; /* classic hero until JS upgrades it */
+    background: #1a1714;
+}
+
+.hero-journey.is-journey {
+    height: 320vh;
+}
+
+@media (max-width: 768px) {
+    .hero-journey.is-journey {
+        height: 280vh;
+    }
+}
+
+.hero-journey .hero {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    height: 100svh;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.hero-stage {
+    position: absolute;
+    inset: 0;
+}
+
+.hero-layer {
+    position: absolute;
+    inset: 0;
+    will-change: transform, opacity;
+}
+
+.hero-layer img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Layers 2/3 hidden until the journey animates them in */
+.is-journey .hero-layer + .hero-layer {
+    opacity: 0;
+}
+
+.hero-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.hero-journey .hero-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+        180deg,
+        rgba(26, 23, 20, 0.38) 0%,
+        rgba(26, 23, 20, 0.22) 42%,
+        rgba(26, 23, 20, 0.55) 100%
+    );
+}
+
+/* Vignette that deepens as you arrive, for finale legibility */
+.hero-vignette {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    opacity: 0;
+    background: radial-gradient(
+        ellipse at center,
+        rgba(26, 23, 20, 0.05) 0%,
+        rgba(26, 23, 20, 0.6) 100%
+    );
+    will-change: opacity;
+}
+
+/* --- Opening titles --- */
+.hero-journey .hero-content {
+    will-change: transform, opacity;
+}
+
+.hero-kicker {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(253, 251, 247, 0.65);
+    margin-top: 18px;
+}
+
+.hero-kicker::before,
+.hero-kicker::after {
+    content: '';
+    display: inline-block;
+    width: 32px;
+    height: 1px;
+    background: rgba(212, 184, 150, 0.55);
+    vertical-align: middle;
+    margin: 0 14px;
+}
+
+/* --- Finale (arrival) --- */
+.hero-finale {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 var(--container-pad);
+    opacity: 0;
+    visibility: hidden;
+    will-change: transform, opacity;
+}
+
+.is-journey .hero-finale {
+    visibility: visible;
+    pointer-events: none; /* enabled by JS once visible */
+}
+
+.hero-finale.is-live {
+    pointer-events: auto;
+}
+
+.hero-finale-title {
+    font-family: var(--font-heading);
+    font-size: clamp(28px, 4.5vw, 52px);
+    font-weight: 400;
+    color: #fff;
+    max-width: 700px;
+    line-height: 1.25;
+    margin-bottom: 18px;
+}
+
+.hero-finale-title em {
+    font-style: italic;
+    color: var(--color-accent-light, #D4B896);
+}
+
+.hero-finale-sub {
+    font-size: clamp(14px, 1.6vw, 17px);
+    color: rgba(253, 251, 247, 0.75);
+    font-weight: 300;
+    max-width: 520px;
+    line-height: 1.7;
+    margin-bottom: 36px;
+}
+
+.hero-finale-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Non-journey (no JS / reduced motion): show finale actions statically
+   below the brand so the hero still has its CTAs */
+.hero-journey:not(.is-journey) .hero {
+    flex-direction: column;
+}
+
+.hero-journey:not(.is-journey) .hero-finale {
+    position: static;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    padding: 0;
+    margin-top: 40px;
+}
+
+.hero-journey:not(.is-journey) .hero-finale-title,
+.hero-journey:not(.is-journey) .hero-finale-sub {
+    display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-journey,
+    .hero-journey.is-journey {
+        height: 100vh;
+    }
+}

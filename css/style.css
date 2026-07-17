@@ -59,6 +59,7 @@ html {
     -moz-osx-font-smoothing: grayscale;
     font-size: 16px;
     overflow-x: hidden;
+    overflow-x: clip;
 }
 
 body {
@@ -66,7 +67,10 @@ body {
     color: var(--color-text);
     background: var(--color-bg);
     line-height: 1.7;
+    /* clip, not hidden: hidden makes body a scroll container and
+       silently breaks position: sticky (the pinned hero journey) */
     overflow-x: hidden;
+    overflow-x: clip;
 }
 
 img {

@@ -52,6 +52,8 @@
     <!-- Styles -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/effects.css">
+    <link rel="stylesheet" href="css/hero-journey.css">
+    <link rel="preload" as="image" href="images/showhome-living.jpg" fetchpriority="high">
 
     <!-- Schema Markup -->
     <script type="application/ld+json">
@@ -168,18 +170,41 @@
         </ul>
     </div>
 
-    <!-- Hero Section — Portia Fox-style slideshow -->
-    <section class="hero" id="hero">
-        <div class="hero-slideshow">
-            <div class="hero-slide active" style="background-image: url('images/res-cinema-room.jpg')"></div>
-            <div class="hero-slide" style="background-image: url('images/hero-bg.jpg')"></div>
-            <div class="hero-slide" style="background-image: url('images/showhome-living.jpg')"></div>
-            <div class="hero-overlay"></div>
-        </div>
-        <div class="hero-content">
-            <h1 class="hero-brand">Studio&nbsp;Chenille</h1>
-        </div>
-    </section>
+    <!-- Hero Journey — scroll-scrubbed walk into the home -->
+    <div class="hero-journey" id="heroJourney" data-hero-frames="images/hero/manifest.json">
+        <section class="hero" id="hero">
+            <div class="hero-stage" aria-hidden="true">
+                <div class="hero-layer">
+                    <img src="images/showhome-living.jpg" alt="" fetchpriority="high" decoding="async">
+                </div>
+                <div class="hero-layer">
+                    <img src="images/res-kitchen-ascot.jpg" alt="" loading="lazy" decoding="async">
+                </div>
+                <div class="hero-layer">
+                    <img src="images/res-cinema-room.jpg" alt="" loading="lazy" decoding="async">
+                </div>
+                <canvas class="hero-canvas" id="heroCanvas" hidden></canvas>
+                <div class="hero-overlay"></div>
+                <div class="hero-vignette"></div>
+            </div>
+            <div class="hero-content">
+                <h1 class="hero-brand">Studio&nbsp;Chenille</h1>
+                <p class="hero-kicker">Luxury Interior Design &mdash; Ascot</p>
+            </div>
+            <div class="hero-finale">
+                <p class="hero-finale-title">Step inside a home designed <em>around you</em>.</p>
+                <p class="hero-finale-sub">Residential, hotel and show home interiors &mdash; crafted in Ascot, delivered across the UK.</p>
+                <div class="hero-finale-actions">
+                    <a href="#contact" class="btn btn-primary">Book Your Free Consultation</a>
+                    <a href="#portfolio" class="btn btn-outline">Explore Our Work</a>
+                </div>
+            </div>
+            <div class="hero-scroll" aria-hidden="true">
+                <span>Scroll to step inside</span>
+                <div class="hero-scroll-line"></div>
+            </div>
+        </section>
+    </div>
 
     <!-- About Section -->
     <section class="section about" id="about">
@@ -852,6 +877,7 @@
 
     <!-- Scripts -->
     <script src="js/main.js"></script>
+    <script src="js/hero-journey.js" defer></script>
     <script src="js/effects.js" defer></script>
 </body>
 </html>

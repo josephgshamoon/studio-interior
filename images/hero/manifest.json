@@ -1,0 +1,7 @@
+{
+    "frames": 84,
+    "pattern": "frames/f-{i}.webp",
+    "pad": 4,
+    "width": 1280,
+    "poster": "poster.jpg"
+}

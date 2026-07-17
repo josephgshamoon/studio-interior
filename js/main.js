@@ -24,9 +24,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Header Scroll ---
     const header = document.getElementById('header');
+    const heroJourney = document.getElementById('heroJourney');
 
     function handleHeaderScroll() {
-        const heroHeight = window.innerHeight - 100;
+        // On the homepage the hero journey pins for several viewport
+        // heights — keep the header transparent until the hero's bottom
+        // edge scrolls up past the header.
+        const heroHeight = heroJourney
+            ? heroJourney.offsetHeight - 100
+            : window.innerHeight - 100;
         if (window.scrollY > heroHeight) {
             header.classList.add('scrolled');
         } else {
@@ -255,17 +261,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         });
-    }
-
-    // --- Hero Slideshow ---
-    const heroSlides = document.querySelectorAll('.hero-slide');
-    if (heroSlides.length > 1) {
-        let currentHeroSlide = 0;
-        setInterval(() => {
-            heroSlides[currentHeroSlide].classList.remove('active');
-            currentHeroSlide = (currentHeroSlide + 1) % heroSlides.length;
-            heroSlides[currentHeroSlide].classList.add('active');
-        }, 5000);
     }
 
     // --- Active nav link on scroll ---
