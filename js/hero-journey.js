@@ -222,12 +222,55 @@
         return -1;
     }
 
+    // Portrait footage on a landscape stage is shown whole (no crop-zoom,
+    // which would both amputate the composition and stretch 720px source
+    // pixels 2x): the full frame sits centred and pin-sharp over a dark
+    // ambient blur of itself — a tall doorway into the house.
+    var backdrop = null;
+
     function coverDraw(img) {
         var cw = canvas.width, ch = canvas.height;
         var iw = img.naturalWidth, ih = img.naturalHeight;
-        var s = Math.max(cw / iw, ch / ih);
-        var dw = iw * s, dh = ih * s;
-        ctx.drawImage(img, (cw - dw) / 2, (ch - dh) / 2, dw, dh);
+        if (!(ih > iw && cw > ch)) {
+            var s = Math.max(cw / iw, ch / ih);
+            var dw = iw * s, dh = ih * s;
+            ctx.drawImage(img, (cw - dw) / 2, (ch - dh) / 2, dw, dh);
+            return;
+        }
+        applyPortraitStage();
+        // ambient wings: draw tiny and stretch back up — a cheap large blur
+        if (!backdrop) {
+            backdrop = document.createElement('canvas');
+            backdrop.width = 32;
+            backdrop.height = 18;
+        }
+        backdrop.getContext('2d').drawImage(img, 0, 0, 32, 18);
+        ctx.drawImage(backdrop, 0, 0, cw, ch);
+        ctx.fillStyle = 'rgba(16, 14, 12, 0.62)';
+        ctx.fillRect(0, 0, cw, ch);
+        var s2 = Math.min(cw / iw, ch / ih);
+        var dw2 = iw * s2, dh2 = ih * s2;
+        ctx.drawImage(img, (cw - dw2) / 2, (ch - dh2) / 2, dw2, dh2);
+    }
+
+    // The DOM pieces around the canvas (finale photo, poster) must match
+    // the contain-fit stage or the dissolve would snap back to a crop-zoom.
+    var stagedPortrait = false;
+    function applyPortraitStage() {
+        if (stagedPortrait) return;
+        stagedPortrait = true;
+        var stage = '#171310';
+        if (finaleLayer) {
+            finaleLayer.style.background = stage;
+            var fi = finaleLayer.querySelector('img');
+            if (fi) fi.style.objectFit = 'contain';
+        }
+        var posterEl = document.getElementById('heroPoster');
+        if (posterEl) {
+            posterEl.style.background = stage;
+            var pi = posterEl.querySelector('img');
+            if (pi) pi.style.objectFit = 'contain';
+        }
     }
 
     // Fractional index with a crossfade between neighbouring frames —
@@ -379,6 +422,9 @@
                     var finaleImg = finaleLayer.querySelector('img');
                     if (finaleImg && finaleImg.decode) finaleImg.decode().catch(function () {});
                 }
+                // portrait-footage hint on a landscape viewport: stage the
+                // poster and finale before the first frame even paints
+                if (!portrait && variant.width && variant.width < 1000) applyPortraitStage();
                 loadFrames(variant, base);
                 requestRender();
             })
