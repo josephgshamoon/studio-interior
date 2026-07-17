@@ -28,21 +28,21 @@ OUT="$ROOT/images/hero"
 command -v ffmpeg >/dev/null || { echo "ffmpeg is required"; exit 1; }
 command -v ffprobe >/dev/null || { echo "ffprobe is required"; exit 1; }
 
-extract() { # $1 src video, $2 out dir, $3 scale filter, $4 max frames
-    local src="$1" dir="$2" scale="$3" max="$4"
+extract() { # $1 src video, $2 out dir, $3 scale filter, $4 max frames, $5 webp quality
+    local src="$1" dir="$2" scale="$3" max="$4" quality="$5"
     local dur fps
     dur=$(ffprobe -v error -select_streams v:0 -show_entries format=duration -of csv=p=0 "$src")
     fps=$(python3 -c "print(min(24, $max / $dur))")
     rm -rf "$dir"; mkdir -p "$dir"
     ffmpeg -hide_banner -loglevel error -i "$src" \
         -vf "fps=${fps},${scale}:flags=lanczos" \
-        -c:v libwebp -quality 68 -preset photo \
+        -c:v libwebp -quality "$quality" -preset photo \
         "$dir/f-%04d.webp"
     ls "$dir"/f-*.webp | wc -l | tr -d ' '
 }
 
 echo "Desktop: $DESKTOP"
-D_COUNT=$(extract "$DESKTOP" "$OUT/frames" "scale=1280:-2" 168)
+D_COUNT=$(extract "$DESKTOP" "$OUT/frames" "scale=1280:-2" 168 80)
 ffmpeg -hide_banner -loglevel error -y -i "$DESKTOP" \
     -vf "scale=1280:-2:flags=lanczos" -vframes 1 -q:v 3 "$OUT/poster.jpg"
 echo "  -> $D_COUNT frames"
@@ -50,7 +50,7 @@ echo "  -> $D_COUNT frames"
 M_JSON=""
 if [ -n "$MOBILE" ]; then
     echo "Mobile: $MOBILE"
-    M_COUNT=$(extract "$MOBILE" "$OUT/frames-mobile" "scale=720:-2" 108)
+    M_COUNT=$(extract "$MOBILE" "$OUT/frames-mobile" "scale=720:-2" 108 74)
     ffmpeg -hide_banner -loglevel error -y -i "$MOBILE" \
         -vf "scale=720:-2:flags=lanczos" -vframes 1 -q:v 3 "$OUT/poster-mobile.jpg"
     echo "  -> $M_COUNT frames"

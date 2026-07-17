@@ -30,6 +30,7 @@
     var finale = wrapper.querySelector('.hero-finale');
     var vignette = wrapper.querySelector('.hero-vignette');
     var scrollHint = wrapper.querySelector('.hero-scroll');
+    var overlay = wrapper.querySelector('.hero-overlay');
     var poster = document.getElementById('heroPoster');
 
     // The poster covers the stage until either the canvas draws its first
@@ -109,6 +110,14 @@
         if (scrollHint) {
             var hintOut = span(p, 0.01, 0.07);
             scrollHint.style.opacity = String(1 - hintOut);
+        }
+
+        // The darkening gradient exists for text legibility — keep it full
+        // while the titles or finale are up, lighten it mid-journey so the
+        // footage shows at closer to its native brightness and punch.
+        if (overlay) {
+            var textiness = Math.max(1 - smooth(span(p, 0.16, 0.3)), smooth(span(p, 0.72, 0.88)));
+            overlay.style.opacity = String(0.45 + 0.55 * textiness);
         }
 
         // Vignette deepens on arrival
