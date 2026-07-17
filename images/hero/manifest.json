@@ -1,10 +1,10 @@
 {
-    "frames": 108,
-    "pattern": "frames-mobile-v3/f-{i}.webp",
+    "frames": 168,
+    "pattern": "frames-v4/f-{i}.webp",
     "pad": 4,
-    "width": 720,
+    "width": 1280,
     "poster": "poster.jpg",
-    "finale_layer": 1,
+    "finale_layer": 0,
     "mobile": {
         "frames": 108,
         "pattern": "frames-mobile-v3/f-{i}.webp",

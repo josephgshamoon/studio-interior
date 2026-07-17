@@ -57,7 +57,8 @@
     <link rel="stylesheet" href="css/style.css?v=9">
     <link rel="stylesheet" href="css/effects.css?v=7">
     <link rel="stylesheet" href="css/hero-journey.css?v=8">
-    <link rel="preload" as="image" href="images/hero/poster-mobile.jpg?v=4" fetchpriority="high">
+    <link rel="preload" as="image" href="images/hero/poster.jpg?v=4" fetchpriority="high" media="(orientation: landscape)">
+    <link rel="preload" as="image" href="images/hero/poster-mobile.jpg?v=4" fetchpriority="high" media="(orientation: portrait)">
 
     <!-- Schema Markup -->
     <script type="application/ld+json">
@@ -159,7 +160,7 @@
         <section class="hero" id="hero">
             <div class="hero-stage" aria-hidden="true" style="background:#4a4741 url(data:image/jpeg;base64,/9j//gAQTGF2YzYxLjE5LjEwMQD/2wBDAAgQEBMQExYWFhYWFhoYGhsbGxoaGhobGxsdHR0iIiIdHR0bGx0dICAiIiUmJSMjIiMmJigoKDAwLi44ODpFRVP/xABlAAACAwEBAAAAAAAAAAAAAAAEBgMCBQEHAQEBAQEAAAAAAAAAAAAAAAAAAgMBEAACAgIBAwUBAAAAAAAAAAACAQMAETEhBAWBQXESE+EVEQEBAQEAAAAAAAAAAAAAAAAAARIx/8AAEQgAEgAgAwEiAAIRAAMRAP/aAAwDAQACEQMRAD8ApH0vTLpVM0m3ocrebaHuMkKYiIJb3+3zeE5uNtL0rAMRy8kkNwlsbdNX9WYnoOHRO4dwhmjwxaePdZuEURx5+OC81en+ws5WPFvVTWsFPVAGnrVDubAVmsJU6//Z) center/cover no-repeat">
                 <div class="hero-layer">
-                    <img src="images/showhome-living-hero.jpg" alt="" decoding="async">
+                    <img src="images/res-kitchen-ascot-hero-wide.jpg" alt="" decoding="async">
                 </div>
                 <div class="hero-layer">
                     <img src="images/res-kitchen-ascot-hero.jpg" alt="" loading="lazy" decoding="async">
@@ -170,7 +171,7 @@
                 <canvas class="hero-canvas" id="heroCanvas" hidden></canvas>
                 <picture class="hero-poster" id="heroPoster">
                     <source media="(orientation: portrait)" srcset="images/hero/poster-mobile.jpg?v=4">
-                    <img src="images/hero/poster-mobile.jpg?v=4" alt="" fetchpriority="high" decoding="async" onerror="this.parentNode.hidden=true">
+                    <img src="images/hero/poster.jpg?v=4" alt="" fetchpriority="high" decoding="async" onerror="this.parentNode.hidden=true">
                 </picture>
                 <div class="hero-overlay"></div>
                 <div class="hero-vignette"></div>
