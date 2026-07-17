@@ -10,17 +10,22 @@ to the full cinematic version.
 > models bill too (Nano Banana 1cr, Nano Banana Pro 2cr, Seedream V5 Lite
 > 1cr) — nothing is free at 0 balance.
 >
-> Deployed state (17 July 2026): both devices run the "enclosed hall"
-> journey — through the front door only the lantern-lit panelled hall is
-> visible (the hall bends; no straight sightline to any glazing), and
-> every exterior view sits behind closed glass. Desktop 9s 16:9 take v3
-> in `frames-v3/`, ending on the AI-edited parkland living room
-> `images/showhome-living-hero.jpg`; mobile 8s 9:16 take v3 in
-> `frames-mobile-v3/`, ending on the AI-edited closed-bifold kitchen
-> `images/res-kitchen-ascot-hero.jpg`. The portfolio grid keeps both
-> original photos. Source backups in /home/clawdbot/:
-> hero-desktop-v3-source.mp4, hero-mobile-v3-source.mp4 (all takes also
-> in the Higgsfield media library).
+> Deployed state (17 July 2026, user decision): ALL devices serve the
+> mobile 8s 9:16 "enclosed hall" take from `frames-mobile-v3/` — manor,
+> lantern-lit panelled hall (bends left, no sightline to glazing),
+> kitchen with glass closed, ending on the AI-edited
+> `images/res-kitchen-ascot-hero.jpg` (finale_layer 1 in the top-level
+> manifest too). Widescreen cover-crops the portrait frames; the footage
+> has enough headroom that this reads well, at the cost of some softness
+> (720px source ×2) and cropped tops at a few beats. The 16:9 take v3 in
+> `frames-v3/` is UNREFERENCED but kept in the repo — it has a flaw (the
+> front door visibly closes itself and re-opens around f0078–f0096)
+> discovered only under dense per-frame QA; do not reinstate it without
+> fixing that. QA lesson: sample every frame of a door transit, not
+> 1fps. The portfolio grid keeps the original photos. Source backups in
+> /home/clawdbot/: hero-desktop-v3-source.mp4 (flawed door),
+> hero-mobile-v3-source.mp4 (all takes also in the Higgsfield media
+> library).
 >
 > Regeneration lessons: (1) Do NOT run tools/hero-video-to-frames.sh
 > desktop-only without restoring the mobile block in manifest.json
