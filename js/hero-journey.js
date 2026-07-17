@@ -200,10 +200,18 @@
     function sizeCanvas() {
         if (!canvas) return;
         dpr = Math.min(window.devicePixelRatio || 1, 2);
-        canvas.width = Math.round(hero.clientWidth * dpr);
-        canvas.height = Math.round(hero.clientHeight * dpr);
+        var w = Math.round(hero.clientWidth * dpr);
+        var h = Math.round(hero.clientHeight * dpr);
+        // assigning width/height blanks the canvas even when unchanged —
+        // mobile URL-bar show/hide fires resize storms while scrolling,
+        // and each needless clear flashed a blank frame (seen as flicker)
+        if (canvas.width === w && canvas.height === h) return;
+        canvas.width = w;
+        canvas.height = h;
         // setting width/height resets context state — restore quality
         if (ctx) ctx.imageSmoothingQuality = 'high';
+        // repaint in the same task so a real resize never shows a blank
+        if (mode === 'video' && current >= 0) render(current);
     }
 
     function nearestLoadedIndex(index) {
@@ -353,8 +361,10 @@
                 var finaleIndex = variant.finale_layer != null ? variant.finale_layer : 0;
                 var base = manifestUrl.slice(0, manifestUrl.lastIndexOf('/') + 1);
                 // opaque context: the canvas is always fully covered, so
-                // skipping the alpha channel saves compositing every frame
-                ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
+                // skipping the alpha channel saves compositing every frame.
+                // No `desynchronized` — it bypasses vsync composition and
+                // produces visible tearing/flicker on some mobile GPUs.
+                ctx = canvas.getContext('2d', { alpha: false });
                 sizeCanvas();
                 mode = 'video';
                 canvas.hidden = false;
