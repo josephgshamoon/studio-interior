@@ -206,12 +206,12 @@
         if (ctx) ctx.imageSmoothingQuality = 'high';
     }
 
-    function nearestLoaded(index) {
+    function nearestLoadedIndex(index) {
         for (var d = 0; d < frameCount; d++) {
-            if (index - d >= 0 && loaded[index - d]) return frames[index - d];
-            if (index + d < frameCount && loaded[index + d]) return frames[index + d];
+            if (index - d >= 0 && loaded[index - d]) return index - d;
+            if (index + d < frameCount && loaded[index + d]) return index + d;
         }
-        return null;
+        return -1;
     }
 
     function coverDraw(img) {
@@ -224,16 +224,28 @@
 
     // Fractional index with a crossfade between neighbouring frames —
     // hides the stepping between sampled frames so the scrub flows.
+    var drawnIndex = -1;
     function drawFrame(x) {
         if (!ctx) return;
         var i0 = Math.floor(x);
         var i1 = Math.min(i0 + 1, frameCount - 1);
         var frac = x - i0;
         if (frac > 0.98 && loaded[i1]) { i0 = i1; frac = 0; }
-        var a = nearestLoaded(i0);
-        if (!a) return;
+        var ni = nearestLoadedIndex(i0);
+        if (ni < 0) return;
+        // While the sequence is still streaming in, painting whatever
+        // frame happens to be loaded makes the canvas roll through
+        // distant moments (reads as flicker at high-motion segments).
+        // Only swap the canvas once a frame near the scrub position is
+        // ready; until then keep what's showing (or the poster).
+        if (Math.abs(ni - i0) > 8) {
+            if (drawnIndex < 0 || !loaded[drawnIndex]) return;
+            ni = drawnIndex;
+        }
+        var a = frames[ni];
         ctx.globalAlpha = 1;
         coverDraw(a);
+        drawnIndex = ni;
         hidePoster();
         if (i1 !== i0 && frac > 0.02 && loaded[i1] && frames[i1] !== a) {
             ctx.globalAlpha = frac;
@@ -297,8 +309,15 @@
         function done() {
             if (--pending > 0) return;
             if (isMobile) return; // mobile keeps the light coarse set
-            // pass 2: fill everything for a fully fluid scrub
-            for (var j = 0; j < frameCount; j++) load(j, null, 'low');
+            // pass 2: fill everything for a fully fluid scrub, nearest
+            // to the visitor's current position first so the segment
+            // they are actually looking at densifies quickest
+            var scale = JOURNEY_END * VIDEO_END;
+            var want = Math.round(clamp01(target / scale) * (frameCount - 1));
+            var order = [];
+            for (var j = 0; j < frameCount; j++) order.push(j);
+            order.sort(function (a, b) { return Math.abs(a - want) - Math.abs(b - want); });
+            for (var k = 0; k < order.length; k++) load(order[k], null, 'low');
         }
     }
 
