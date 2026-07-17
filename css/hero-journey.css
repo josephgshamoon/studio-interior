@@ -214,6 +214,19 @@
     display: none;
 }
 
+@media (max-width: 560px) {
+    .hero-kicker {
+        font-size: 11px;
+        letter-spacing: 0.22em;
+    }
+
+    /* the flanking rules don't fit a phone width — they force a lopsided wrap */
+    .hero-kicker::before,
+    .hero-kicker::after {
+        display: none;
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .hero-journey,
     .hero-journey.is-journey {
