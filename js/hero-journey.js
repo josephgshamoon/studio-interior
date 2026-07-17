@@ -30,6 +30,17 @@
     var finale = wrapper.querySelector('.hero-finale');
     var vignette = wrapper.querySelector('.hero-vignette');
     var scrollHint = wrapper.querySelector('.hero-scroll');
+    var poster = document.getElementById('heroPoster');
+
+    // The poster covers the stage until either the canvas draws its first
+    // real frame (video mode) or zoom mode is chosen.
+    function hidePoster() {
+        if (!poster) return;
+        var el = poster;
+        poster = null;
+        el.classList.add('is-done');
+        setTimeout(function () { el.hidden = true; }, 550);
+    }
 
     wrapper.classList.add('is-journey');
 
@@ -102,12 +113,12 @@
 
         // Vignette deepens on arrival
         if (vignette) {
-            vignette.style.opacity = String(0.9 * smooth(span(p, 0.72, 0.96)));
+            vignette.style.opacity = String(0.9 * smooth(span(p, 0.85, 0.98)));
         }
 
         // Finale: arrival statement + CTAs — lands after the room resolves
         if (finale) {
-            var fin = smooth(span(p, 0.86, 0.97));
+            var fin = smooth(span(p, 0.92, 0.995));
             finale.style.opacity = String(fin);
             finale.style.transform = 'translateY(' + (34 * (1 - fin)) + 'px)';
             finale.classList.toggle('is-live', fin > 0.6);
@@ -154,8 +165,8 @@
     // Chenille's actual work, whatever the AI footage ends on. The video
     // keeps moving until fully covered (never visibly freezes) and the
     // photo continues the same forward push, easing to rest at the end.
-    var VIDEO_END = 0.9;
-    var PHOTO_IN = [0.72, 0.88];
+    var VIDEO_END = 0.97;
+    var PHOTO_IN = [0.9, 0.985];
 
     function sizeCanvas() {
         if (!canvas) return;
@@ -191,6 +202,7 @@
         if (!a) return;
         ctx.globalAlpha = 1;
         coverDraw(a);
+        hidePoster();
         if (i1 !== i0 && frac > 0.02 && loaded[i1] && frames[i1] !== a) {
             ctx.globalAlpha = frac;
             coverDraw(frames[i1]);
@@ -206,7 +218,7 @@
             var drift = span(p, PHOTO_IN[0], 1);
             drift = 1 - (1 - drift) * (1 - drift) * (1 - drift);
             finaleLayer.style.opacity = String(f);
-            finaleLayer.style.transform = 'scale(' + (1 + 0.07 * drift).toFixed(4) + ')';
+            finaleLayer.style.transform = 'scale(' + (1 + 0.035 * drift).toFixed(4) + ')';
             finaleLayer.style.visibility = f <= 0.001 ? 'hidden' : 'visible';
         }
     }
@@ -266,14 +278,14 @@
         fetch(manifestUrl, { cache: 'no-cache' })
             .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
             .then(function (manifest) {
-                if (!manifest || !manifest.frames) return; // placeholder manifest — zoom mode stays
+                if (!manifest || !manifest.frames) { hidePoster(); return; } // placeholder — zoom mode
                 // Phones get their own portrait frame set — a 16:9-only set
                 // over-crops on a portrait screen, so without one keep zoom mode.
                 var portrait = hero.clientHeight > hero.clientWidth;
                 var variant = manifest;
                 if (portrait) {
                     if (manifest.mobile && manifest.mobile.frames) variant = manifest.mobile;
-                    else return;
+                    else { hidePoster(); return; }
                 }
                 var finaleIndex = variant.finale_layer != null ? variant.finale_layer : 0;
                 var base = manifestUrl.slice(0, manifestUrl.lastIndexOf('/') + 1);
@@ -292,7 +304,9 @@
                 loadFrames(variant, base);
                 requestRender();
             })
-            .catch(function () { /* no frames yet — zoom mode stays */ });
+            .catch(function () { hidePoster(); /* no frames — zoom mode stays */ });
+    } else {
+        hidePoster();
     }
 
     requestRender();

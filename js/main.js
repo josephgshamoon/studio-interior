@@ -4,6 +4,11 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
+    // Stale-cache guard: HTML cached before the preloader was removed
+    // still contains it, and without the old dismiss code it would sit
+    // as a full-screen dark overlay forever.
+    document.querySelectorAll('.preloader').forEach(el => el.remove());
+
     // --- Header Scroll ---
     const header = document.getElementById('header');
     const heroJourney = document.getElementById('heroJourney');

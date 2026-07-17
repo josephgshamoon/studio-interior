@@ -63,6 +63,30 @@
     height: 100%;
 }
 
+/* First paint: the video's opening frame, shown instantly and faded out
+   once the canvas has genuinely drawn — prevents any flash of the wrong
+   scene while the manifest and frames load. */
+.hero-poster {
+    position: absolute;
+    inset: 0;
+    transition: opacity 0.5s ease;
+}
+
+.hero-poster img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.hero-poster.is-done {
+    opacity: 0;
+}
+
+.hero-poster[hidden] {
+    display: none;
+}
+
 .hero-journey .hero-overlay {
     position: absolute;
     inset: 0;

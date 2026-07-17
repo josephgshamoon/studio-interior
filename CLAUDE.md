@@ -13,7 +13,7 @@ python3 -m http.server 8000        # local preview — no build step
 bash tools/hero-video-to-frames.sh hero.mp4   # convert hero video → scroll-scrub frames
 ```
 
-Deploy = `git push origin main` (GitHub Pages, `CNAME` → studiochenille.com). `.htaccess` is for Apache hosting and is ignored by Pages. Verification is manual: serve locally and check in a browser (Playwright chromium is cached on this machine under `~/.cache/ms-playwright/*/chrome-linux64/chrome` if headless screenshots are needed).
+Deploy = `git push origin main` (GitHub Pages, `CNAME` → studiochenille.com). `.htaccess` is for Apache hosting and is ignored by Pages. Pages caches assets ~10 min: `index.html` references its CSS/JS with `?v=N` query strings — bump N whenever those files change, or stale-HTML/fresh-JS mixes cause breakage (a stuck dark preloader overlay was one such bug; main.js keeps a guard that removes orphaned `.preloader` nodes from stale HTML). Verification is manual: serve locally and check in a browser (Playwright chromium is cached on this machine under `~/.cache/ms-playwright/*/chrome-linux64/chrome` if headless screenshots are needed).
 
 ## Architecture
 

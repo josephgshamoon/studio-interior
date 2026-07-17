@@ -51,6 +51,8 @@ M_JSON=""
 if [ -n "$MOBILE" ]; then
     echo "Mobile: $MOBILE"
     M_COUNT=$(extract "$MOBILE" "$OUT/frames-mobile" "scale=720:-2" 108)
+    ffmpeg -hide_banner -loglevel error -y -i "$MOBILE" \
+        -vf "scale=720:-2:flags=lanczos" -vframes 1 -q:v 3 "$OUT/poster-mobile.jpg"
     echo "  -> $M_COUNT frames"
     M_JSON=$(printf ',\n    "mobile": {\n        "frames": %s,\n        "pattern": "frames-mobile/f-{i}.webp",\n        "pad": 4,\n        "finale_layer": 1\n    }' "$M_COUNT")
 fi
