@@ -17,7 +17,11 @@ to the full cinematic version.
 > The mobile source video no longer exists on disk — do NOT run
 > tools/hero-video-to-frames.sh desktop-only without restoring the mobile
 > block in manifest.json afterwards (a desktop-only run rewrites the
-> manifest without it). Desktop source backup:
+> manifest without it). Whenever frames are replaced, also bump the query
+> version in the manifest's pattern (e.g. `frames/f-{i}.webp?v=3`) — the
+> script writes it plain, and without a version bump returning visitors
+> mix stale cached frames with new ones (seen as old-content flicker in
+> the scrub; GitHub Pages caches assets ~10 min). Desktop source backup:
 > /home/clawdbot/hero-desktop-v2-source.mp4 (also in the Higgsfield media
 > library).
 

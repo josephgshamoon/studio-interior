@@ -1868,7 +1868,8 @@ a.service-card {
     color: var(--color-accent-light);
 }
 
-.page-header .section-title {
+.page-header .section-title,
+.page-header h1 {
     color: var(--color-text-inverse);
     font-size: clamp(24px, 3.5vw, 38px);
 }

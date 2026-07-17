@@ -1,6 +1,6 @@
 {
     "frames": 168,
-    "pattern": "frames/f-{i}.webp",
+    "pattern": "frames/f-{i}.webp?v=2",
     "pad": 4,
     "width": 1280,
     "poster": "poster.jpg",
