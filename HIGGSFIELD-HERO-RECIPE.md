@@ -14,14 +14,17 @@ to the full cinematic version.
 > the original video as a Seedance `video_references` motion reference so
 > every window shows English parkland instead of a city skyline, ending on
 > the AI-edited `images/showhome-living-hero.jpg`) plus a 9:16 mobile take.
-> The mobile source video no longer exists on disk — do NOT run
-> tools/hero-video-to-frames.sh desktop-only without restoring the mobile
-> block in manifest.json afterwards (a desktop-only run rewrites the
-> manifest without it). Whenever frames are replaced, also bump the query
-> version in the manifest's pattern (e.g. `frames/f-{i}.webp?v=3`) — the
-> script writes it plain, and without a version bump returning visitors
-> mix stale cached frames with new ones (seen as old-content flicker in
-> the scrub; GitHub Pages caches assets ~10 min). Desktop source backup:
+> Do NOT run tools/hero-video-to-frames.sh desktop-only without restoring
+> the mobile block in manifest.json afterwards (a desktop-only run
+> rewrites the manifest without it). Whenever frames are replaced, also
+> bump the query version in BOTH manifest patterns (e.g.
+> `frames/f-{i}.webp?v=3`) — the script writes them plain, and without a
+> version bump returning visitors mix stale cached frames with new ones
+> (seen as old-content flicker in the scrub; GitHub Pages caches assets
+> ~10 min). Source backups: /home/clawdbot/hero-desktop-v2-source.mp4 and
+> /home/clawdbot/hero-mobile-v2-source.mp4 (mobile v2 regenerated 17 July
+> — same manor as desktop, door opens into a hall, ends on the real
+> kitchen photo; both takes also live in the Higgsfield media library). Desktop source backup:
 > /home/clawdbot/hero-desktop-v2-source.mp4 (also in the Higgsfield media
 > library).
 
