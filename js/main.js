@@ -156,6 +156,46 @@ document.addEventListener('DOMContentLoaded', () => {
         applyFilter(activeBtn.getAttribute('data-filter'));
     }
 
+    // --- Portfolio ambient video loops ---
+    // Videos load only when a tile scrolls into view and pause when it leaves.
+    // Static images remain for reduced-motion, Save-Data, and no-JS visitors.
+    const videoTiles = document.querySelectorAll('.portfolio-image[data-video]');
+    const conn = navigator.connection;
+    if (videoTiles.length &&
+        !window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
+        !(conn && conn.saveData) &&
+        'IntersectionObserver' in window) {
+
+        const videoObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const tile = entry.target;
+                let video = tile.querySelector('video');
+                if (entry.isIntersecting) {
+                    if (!video) {
+                        video = document.createElement('video');
+                        video.muted = true;
+                        video.loop = true;
+                        video.playsInline = true;
+                        video.setAttribute('muted', '');
+                        video.setAttribute('playsinline', '');
+                        video.setAttribute('aria-hidden', 'true');
+                        video.src = tile.getAttribute('data-video');
+                        video.addEventListener('playing', () => {
+                            tile.classList.add('video-live');
+                        }, { once: true });
+                        const overlay = tile.querySelector('.portfolio-overlay');
+                        tile.insertBefore(video, overlay || null);
+                    }
+                    video.play().catch(() => {});
+                } else if (video) {
+                    video.pause();
+                }
+            });
+        }, { threshold: 0.2 });
+
+        videoTiles.forEach(tile => videoObserver.observe(tile));
+    }
+
     // --- Testimonials Slider ---
     const track = document.getElementById('testimonialTrack');
     const prevBtn = document.getElementById('testimonialPrev');

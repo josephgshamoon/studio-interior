@@ -50,9 +50,35 @@ Falls back to a classic static hero when JS is absent, `prefers-reduced-motion` 
 - `body` must use `overflow-x: clip`, never `hidden` — `hidden` makes body a scroll container and silently breaks the sticky pinning (style.css declares `hidden` then `clip` deliberately, as a fallback chain).
 - The header's transparent→solid switch in `main.js` is coupled to `#heroJourney`'s height; changing the wrapper height or hero structure affects it.
 
+### Portfolio ambient videos (homepage Featured Projects)
+
+Each grid tile in `#projects` carries `data-video="videos/portfolio/<name>.mp4"`;
+main.js lazy-injects a muted looping `<video>` when the tile scrolls into view
+(pauses off-screen, skipped entirely for reduced-motion/Save-Data/no-JS — the
+`<img>` always remains as poster and fallback). A tile without `data-video`
+simply stays static (hotel-guest-bedroom is deliberately static: it's a
+two-panel diptych and video models pan between the panels instead of holding).
+
+**Every new portfolio image added to the grid should get a matching clip.**
+Recipe: Seedance 2.0 image-to-video on fal.ai (`~/.claude/skills/media-gen/`,
+key in `~/.fal_key` — never in this public repo), 720p, 4–5s, audio off,
+`end_image_url` = the source photo so the clip returns to frame 1 and loops
+seamlessly. Prompt style: slow gimbal push-in toward a focal point + one
+ambient detail (candle flicker, foliage, drifting clouds), "nothing in the
+room changes", ease back to original framing. QA a 5fps contact sheet before
+shipping (models invent people/objects), then compress:
+`ffmpeg -i in.mp4 -vf "scale=w=960:h=960:force_original_aspect_ratio=decrease" -c:v libx264 -crf 26 -preset slow -pix_fmt yuv420p -movflags +faststart -an out.mp4`
+(~250–500KB per clip).
+
 ### Higgsfield / AI asset generation
 
-There is no unlimited Seedance on the owner's Higgsfield Plus plan — Seedance 2.0 **bills credits everywhere** (web app and Claude MCP connector alike, ~4.5 credits/second at 720p std). Preflight with `get_cost: true` and check `balance` before generating anything.
+Video/image generation now runs pay-per-use on **fal.ai** via the `media-gen`
+skill (July 2026: Seedance 2.0 i2v $0.30/s std 720p, Kling 3 std $0.084/s;
+always state the dollar cost before submitting). The Higgsfield MCP connector
+remains available as fallback: there is no unlimited Seedance on the owner's
+Higgsfield Plus plan — Seedance 2.0 **bills credits everywhere** (web app and
+Claude MCP connector alike, ~4.5 credits/second at 720p std). Preflight with
+`get_cost: true` and check `balance` before generating anything.
 
 ## Conventions
 
