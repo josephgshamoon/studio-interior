@@ -171,6 +171,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const hoverMode = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
+        function tileRate(tile) {
+            return parseFloat(tile.getAttribute('data-video-rate')) || VIDEO_RATE;
+        }
+
         function ensureVideo(tile) {
             let video = tile.querySelector('video');
             if (!video) {
@@ -183,8 +187,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 video.setAttribute('playsinline', '');
                 video.setAttribute('aria-hidden', 'true');
                 video.src = tile.getAttribute('data-video');
-                video.defaultPlaybackRate = VIDEO_RATE;
-                video.playbackRate = VIDEO_RATE;
+                video.defaultPlaybackRate = tileRate(tile);
+                video.playbackRate = tileRate(tile);
                 video.addEventListener('playing', () => {
                     tile.classList.add('video-live');
                 });
@@ -218,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 tile.addEventListener('mouseenter', () => {
                     const video = ensureVideo(tile);
                     video.currentTime = 0;
-                    video.playbackRate = VIDEO_RATE;
+                    video.playbackRate = tileRate(tile);
                     video.play().catch(() => {});
                 });
                 tile.addEventListener('mouseleave', () => {
