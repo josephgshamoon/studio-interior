@@ -157,43 +157,79 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Portfolio ambient video loops ---
-    // Videos load only when a tile scrolls into view and pause when it leaves.
+    // Hover-capable devices: the still comes alive on mouseenter and fades
+    // back on leave (clips start on exactly the still frame). Touch devices
+    // play the one tile in view instead, since hover doesn't exist there.
     // Static images remain for reduced-motion, Save-Data, and no-JS visitors.
     const videoTiles = document.querySelectorAll('.portfolio-image[data-video]');
     const conn = navigator.connection;
+    const VIDEO_RATE = 0.65;
     if (videoTiles.length &&
         !window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
         !(conn && conn.saveData) &&
         'IntersectionObserver' in window) {
 
+        const hoverMode = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+        function ensureVideo(tile) {
+            let video = tile.querySelector('video');
+            if (!video) {
+                video = document.createElement('video');
+                video.muted = true;
+                video.loop = true;
+                video.playsInline = true;
+                video.preload = 'auto';
+                video.setAttribute('muted', '');
+                video.setAttribute('playsinline', '');
+                video.setAttribute('aria-hidden', 'true');
+                video.src = tile.getAttribute('data-video');
+                video.defaultPlaybackRate = VIDEO_RATE;
+                video.playbackRate = VIDEO_RATE;
+                video.addEventListener('playing', () => {
+                    tile.classList.add('video-live');
+                });
+                const overlay = tile.querySelector('.portfolio-overlay');
+                tile.insertBefore(video, overlay || null);
+            }
+            return video;
+        }
+
         const videoObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 const tile = entry.target;
-                let video = tile.querySelector('video');
                 if (entry.isIntersecting) {
-                    if (!video) {
-                        video = document.createElement('video');
-                        video.muted = true;
-                        video.loop = true;
-                        video.playsInline = true;
-                        video.setAttribute('muted', '');
-                        video.setAttribute('playsinline', '');
-                        video.setAttribute('aria-hidden', 'true');
-                        video.src = tile.getAttribute('data-video');
-                        video.addEventListener('playing', () => {
-                            tile.classList.add('video-live');
-                        }, { once: true });
-                        const overlay = tile.querySelector('.portfolio-overlay');
-                        tile.insertBefore(video, overlay || null);
+                    const video = ensureVideo(tile);
+                    if (!hoverMode) {
+                        video.play().catch(() => {});
                     }
-                    video.play().catch(() => {});
-                } else if (video) {
-                    video.pause();
+                } else {
+                    const video = tile.querySelector('video');
+                    if (video) {
+                        video.pause();
+                        if (hoverMode) tile.classList.remove('video-live');
+                    }
                 }
             });
         }, { threshold: 0.2 });
 
-        videoTiles.forEach(tile => videoObserver.observe(tile));
+        videoTiles.forEach(tile => {
+            videoObserver.observe(tile);
+            if (hoverMode) {
+                tile.addEventListener('mouseenter', () => {
+                    const video = ensureVideo(tile);
+                    video.currentTime = 0;
+                    video.playbackRate = VIDEO_RATE;
+                    video.play().catch(() => {});
+                });
+                tile.addEventListener('mouseleave', () => {
+                    const video = tile.querySelector('video');
+                    if (video) {
+                        video.pause();
+                        tile.classList.remove('video-live');
+                    }
+                });
+            }
+        });
     }
 
     // --- Testimonials Slider ---
