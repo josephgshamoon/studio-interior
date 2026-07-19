@@ -1,13 +1,13 @@
 {
     "frames": 168,
-    "pattern": "frames-v4b/f-{i}.webp",
+    "pattern": "frames-v8/f-{i}.webp",
     "pad": 4,
     "width": 1280,
-    "poster": "poster-v4b.jpg",
+    "poster": "poster-v8.jpg",
     "finale_layer": 0,
     "tiers": [
-        { "min_phys": 2801, "src": "videos/hero/hero-desktop-2160-v4b.mp4" },
-        { "min_phys": 1441, "src": "videos/hero/hero-desktop-1440-v4b.mp4" }
+        { "min_phys": 2801, "src": "videos/hero/hero-desktop-2160-v8.mp4" },
+        { "min_phys": 1441, "src": "videos/hero/hero-desktop-1440-v8.mp4" }
     ],
     "mobile": {
         "frames": 108,

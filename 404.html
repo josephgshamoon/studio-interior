@@ -41,14 +41,49 @@
                 </svg>
                 <span class="nav-logo-text">Studio Chenille</span>
             </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="/#about" class="nav-link">About</a></li>
+                <li class="nav-dropdown">
+                    <a href="/#portfolio" class="nav-link">Portfolio <svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 4l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></a>
+                    <div class="nav-dropdown-menu">
+                        <a href="/residential-interior-design.html">Residential Design</a>
+                        <a href="/hotel-hospitality-design.html">Hotels</a>
+                        <a href="/commercial-interior-design.html">Commercial Design</a>
+                        <a href="/show-home-design.html">Show Home Design</a>
+                    </div>
+                </li>
+                <li class="nav-dropdown">
+                    <a href="/areas-we-serve.html" class="nav-link">Areas <svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 4l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></a>
+                    <div class="nav-dropdown-menu">
+                        <a href="/interior-design-ascot.html">Ascot</a>
+                        <a href="/interior-design-windsor.html">Windsor</a>
+                        <a href="/interior-design-mayfair.html">Mayfair</a>
+                        <a href="/interior-design-chelsea.html">Chelsea</a>
+                        <a href="/areas-we-serve.html">View All Areas</a>
+                    </div>
+                </li>
+                <li><a href="/#process" class="nav-link">Process</a></li>
+                <li><a href="/#contact" class="nav-link">Contact</a></li>
+            </ul>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </nav>
     </header>
-    <section class="page-header" style="min-height:70vh;display:flex;align-items:center;justify-content:center;">
-        <div class="container" style="text-align:center;">
-            <div class="section-label">404 Error</div>
-            <h1 class="section-title" style="color:var(--color-text-inverse);">Page Not Found</h1>
-            <p class="section-subtitle" style="margin-bottom:32px;">The page you're looking for doesn't exist or has been moved.</p>
-            <a href="/" class="btn btn-primary">Return Home</a>
+    <section class="page-header" style="min-height:82vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;">
+        <img src="images/res-kitchen-ascot-hero-wide.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.22;" loading="eager" decoding="async">
+        <div class="container" style="text-align:center;position:relative;">
+            <div class="section-label">404</div>
+            <h1 class="section-title" style="color:var(--color-text-inverse);font-size:clamp(40px,6vw,72px);">This room doesn't exist</h1>
+            <p class="section-subtitle" style="margin:0 auto 40px;max-width:520px;">The page you're looking for has been moved or never existed. Let us show you somewhere beautiful instead.</p>
+            <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:48px;">
+                <a href="/" class="btn btn-primary">Return Home</a>
+                <a href="/#portfolio" class="btn btn-secondary" style="border:1px solid rgba(247,243,236,0.55);color:var(--color-text-inverse);">View Our Work</a>
+                <a href="/#contact" class="btn btn-secondary" style="border:1px solid rgba(247,243,236,0.55);color:var(--color-text-inverse);">Contact Us</a>
+            </div>
+            <p style="color:rgba(247,243,236,0.65);font-size:14px;letter-spacing:1px;">Or call us on <a href="tel:+441344249233" style="color:var(--color-accent);">+44 (0) 1344 249233</a></p>
         </div>
     </section>
     <!-- Footer -->
