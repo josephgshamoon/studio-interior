@@ -83,6 +83,7 @@
         } else {
             rafId = null;
             lastTime = 0;
+            if (hybrid) idleSharpen();
         }
     }
 
@@ -318,16 +319,63 @@
     var scrubReady = false;
     var seekBusy = false;
     var seekPending = -1;
+    var scrubVariant = null;
+    var scrubBase = '';
+
+    // Not every machine can seek-decode 4K fast enough for a fluid scrub.
+    // Each visitor's device measures its own seek latency; if the rolling
+    // median says the scrub is lagging the scroll, that machine switches
+    // to the instant webp frame path for motion and keeps the video only
+    // to re-sharpen the still image whenever scrolling pauses.
+    var hybrid = false;
+    var idleVideo = null;
+    var seekT0 = 0;
+    var seekLat = [];
+
+    function noteSeekLatency() {
+        seekLat.push(performance.now() - seekT0);
+        if (seekLat.length > 8) seekLat.shift();
+        if (seekLat.length === 8) {
+            var s = seekLat.slice().sort(function (a, b) { return a - b; });
+            if (s[4] > 60) engageHybrid();
+        }
+    }
+
+    function engageHybrid() {
+        if (hybrid || !scrubVideo) return;
+        hybrid = true;
+        idleVideo = scrubVideo;
+        scrubVideo = null;
+        scrubReady = false;
+        seekBusy = false;
+        seekPending = -1;
+        mode = 'video';
+        loadFrames(scrubVariant, scrubBase);
+        requestRender();
+    }
+
+    // One sharp 4K paint at rest: called when the render loop goes idle.
+    function idleSharpen() {
+        if (!idleVideo || mode !== 'video') return;
+        var dur = idleVideo.duration;
+        if (!dur) return;
+        var frac = clamp01(clamp01(target / JOURNEY_END) / VIDEO_END);
+        if (frac >= 1) return; // finale photo covers the canvas
+        idleVideo.currentTime = Math.min(frac * dur, dur - 0.05);
+    }
 
     function seekDraw(t) {
         if (!scrubReady) return;
         if (seekBusy) { seekPending = t; return; }
         if (Math.abs(scrubVideo.currentTime - t) < 0.012) return; // same frame
         seekBusy = true;
+        seekT0 = performance.now();
         scrubVideo.currentTime = t;
     }
 
     function initVideoScrub(tier, variant, base) {
+        scrubVariant = variant;
+        scrubBase = base;
         var v = document.createElement('video');
         v.muted = true;
         v.playsInline = true;
@@ -359,7 +407,13 @@
             requestRender();
         });
         v.addEventListener('seeked', function () {
+            if (hybrid) {
+                // idle sharpening: only paint if the scrub is still at rest
+                if (mode === 'video' && rafId === null) coverDraw(v);
+                return;
+            }
             if (fellBack || !scrubReady) return;
+            noteSeekLatency();
             coverDraw(v);
             hidePoster();
             seekBusy = false;
