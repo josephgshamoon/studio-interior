@@ -209,23 +209,69 @@ document.addEventListener('DOMContentLoaded', () => {
             return video;
         }
 
+        // Touch devices have no hover, and playing every visible tile at
+        // once reads as noise (and decodes 2-3 videos simultaneously).
+        // Instead, spotlight the single tile nearest the viewport centre —
+        // the motion follows the thumb, one room at a time, mirroring the
+        // desktop's one-at-a-time hover. The settle delay keeps fast
+        // flicks from flickering tiles on and off mid-scroll.
+        const visibleTiles = new Set();
+        let spotlightTile = null;
+        let settleTimer = null;
+
+        function stopTile(tile) {
+            const video = tile.querySelector('video');
+            if (video) video.pause();
+            tile.classList.remove('video-live');
+        }
+
+        function pickSpotlight() {
+            let best = null;
+            let bestDist = Infinity;
+            const mid = window.innerHeight / 2;
+            visibleTiles.forEach(tile => {
+                const r = tile.getBoundingClientRect();
+                const dist = Math.abs(r.top + r.height / 2 - mid);
+                if (dist < bestDist) { bestDist = dist; best = tile; }
+            });
+            if (best === spotlightTile) return;
+            if (spotlightTile) stopTile(spotlightTile);
+            spotlightTile = best;
+            if (best) {
+                const video = ensureVideo(best);
+                video.playbackRate = tileRate(best);
+                video.play().catch(() => {});
+            }
+        }
+
+        function scheduleSpotlight() {
+            clearTimeout(settleTimer);
+            settleTimer = setTimeout(pickSpotlight, 300);
+        }
+
         const videoObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 const tile = entry.target;
                 if (entry.isIntersecting) {
-                    const video = ensureVideo(tile);
+                    ensureVideo(tile); // buffer early, play only on spotlight/hover
                     if (!hoverMode) {
-                        video.play().catch(() => {});
+                        visibleTiles.add(tile);
+                        scheduleSpotlight();
                     }
                 } else {
-                    const video = tile.querySelector('video');
-                    if (video) {
-                        video.pause();
-                        if (hoverMode) tile.classList.remove('video-live');
+                    if (!hoverMode) {
+                        visibleTiles.delete(tile);
+                        if (tile === spotlightTile) spotlightTile = null;
+                        scheduleSpotlight();
                     }
+                    stopTile(tile);
                 }
             });
         }, { threshold: 0.2 });
+
+        if (!hoverMode) {
+            window.addEventListener('scroll', scheduleSpotlight, { passive: true });
+        }
 
         videoTiles.forEach(tile => {
             videoObserver.observe(tile);
