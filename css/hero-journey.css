@@ -115,19 +115,6 @@
     will-change: opacity;
 }
 
-/* Warm-dark veil for the desktop arrival: the footage dips through it
-   and the finale photo rises out the other side — the two never
-   crossfade directly, so mismatched framing can't ghost. Kept visible
-   at opacity 0 so it stays rasterised (no first-use pop). */
-.hero-dip {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    background: #171310;
-    opacity: 0;
-    will-change: opacity;
-}
-
 /* --- Opening titles --- */
 .hero-journey .hero-content {
     will-change: transform, opacity;
