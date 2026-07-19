@@ -36,6 +36,15 @@ to the full cinematic version.
 > frames-v5/, poster-v5.jpg, poster-1440/2160-v5.jpg,
 > hero-desktop-1440/2160-v5.mp4.
 >
+> Second update 19 July 2026 — owner decision: v5 was retired the same
+> day and the ORIGINAL v4 take (job 7cd2bf23, verified byte-identical
+> to hero-desktop-v4-source.mp4) redeployed from its Topaz 4K master as
+> `-v4b` assets. The owner prefers v4's framing/door beat and accepts
+> its through-door morph. v5's masters remain in
+> ~/studiochenille-masters/ if ever wanted. hero-journey.js v13 adds an
+> orientation-flip reload guard (a half-snapped window maximised later
+> no longer keeps the phone variant on a laptop).
+>
 > QA lessons: sample EVERY frame of a door transit (the v3 desktop
 > take's self-closing door hid between 1fps samples); `video_references`
 > imposes the reference's layout — poison when changing the shot's

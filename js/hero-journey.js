@@ -534,6 +534,20 @@
                     mode = 'video';
                     loadFrames(variant, base);
                 }
+                // The variant is chosen once at boot — a window resized
+                // across the portrait/landscape boundary (a half-snapped
+                // laptop window maximised later) would otherwise keep the
+                // wrong aspect's footage. Reload once when the stage
+                // orientation genuinely flips; assets are cached, so the
+                // reload is quick and lands on the right variant.
+                var orientTimer = null;
+                window.addEventListener('resize', function () {
+                    clearTimeout(orientTimer);
+                    orientTimer = setTimeout(function () {
+                        var nowPortrait = hero.clientHeight > hero.clientWidth;
+                        if (nowPortrait !== portrait) location.reload();
+                    }, 600);
+                });
                 requestRender();
             })
             .catch(function () { hidePoster(); /* no frames — zoom mode stays */ });
