@@ -207,16 +207,13 @@
     var VIDEO_END = 0.97;
     var PHOTO_IN = [0.9, 0.985];
 
-    // The widened desktop footage ends on a wider framing than the finale
-    // photo (photo ≈ its final frame zoomed 1.23x, crop window at
-    // [0.090, 0.140] — measured, +3.2% for the photo's drift scale at
-    // cover time). Crossfading two different framings double-exposes:
-    // ghost pendants, doubled window bars. So during the dissolve the
-    // canvas zooms INTO the photo's framing in lockstep with the fade —
-    // the blend is then between aligned images and reads as one
-    // continuous push-in. Landscape only; the phone's footage already
-    // ends on its photo.
-    var DISSOLVE_MATCH = null; // set at boot: { z: 1.27, x: 0.103, y: 0.153 }
+    // Escape hatch for footage whose final frame doesn't match the finale
+    // photo's framing: when set ({z, x, y} = zoom + crop-window origin),
+    // the canvas zooms into that framing in lockstep with the photo fade
+    // so the crossfade blends aligned images instead of double-exposing.
+    // v9 footage ends on the photo's framing, so this stays null — only
+    // needed again if a future cut breaks that guarantee (remeasure it).
+    var DISSOLVE_MATCH = null;
 
     function dissolveT() {
         if (!DISSOLVE_MATCH) return 0;
@@ -626,16 +623,11 @@
                     }
                     else { hidePoster(); return; }
                 }
-                // The widened 16:9 footage never fully clears the doorway:
-                // an outpainted blank wall parks across the right quarter
-                // for the last ~0.7s (the phone's portrait crop never sees
-                // it). Land the finale photo earlier on landscape screens,
-                // while that wall is still sliding, so the journey never
-                // rests on it — the photo is settled before the text.
-                if (!portrait) {
-                    PHOTO_IN = [0.85, 0.935];
-                    DISSOLVE_MATCH = { z: 1.27, x: 0.103, y: 0.153 };
-                }
+                // v9 desktop footage ends with a generated bridge that
+                // glides to rest exactly on the finale photo's framing, so
+                // the default dissolve timing needs no per-orientation
+                // override and no canvas alignment zoom (DISSOLVE_MATCH
+                // stays null; dissolveT() then self-disables).
                 var finaleIndex = variant.finale_layer != null ? variant.finale_layer : 0;
                 var base = manifestUrl.slice(0, manifestUrl.lastIndexOf('/') + 1);
                 // opaque context: the canvas is always fully covered, so
