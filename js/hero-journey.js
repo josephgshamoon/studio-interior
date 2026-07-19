@@ -207,19 +207,13 @@
     var VIDEO_END = 0.97;
     var PHOTO_IN = [0.9, 0.985];
 
-    // Escape hatch for footage whose final frame doesn't match the finale
-    // photo's framing: when set ({z, x, y} = zoom + crop-window origin),
-    // the canvas zooms into that framing in lockstep with the photo fade
-    // so the crossfade blends aligned images instead of double-exposing.
-    // v9 footage ends on the photo's framing, so this stays null — only
-    // needed again if a future cut breaks that guarantee (remeasure it).
-    var DISSOLVE_MATCH = null;
-
-    function dissolveT() {
-        if (!DISSOLVE_MATCH) return 0;
-        var p = clamp01((current < 0 ? 0 : current) / JOURNEY_END);
-        return Math.max(smooth(span(p, PHOTO_IN[0], PHOTO_IN[1])), smooth(exitBoost));
-    }
+    // Desktop lands via a brief dip through warm dark instead of a direct
+    // crossfade: the footage eases into the veil, the photo swaps in
+    // underneath at full dark, and the room fades back up as the text
+    // arrives. The footage and the photo never blend directly, so any
+    // framing mismatch is invisible by construction. Phones keep the
+    // straight crossfade — their portrait footage ends on its own photo.
+    var DIP = null; // set at boot on landscape: [veilStart, fullDark, reveal, clear]
 
     function sizeCanvas() {
         if (!canvas) return;
@@ -258,19 +252,9 @@
         var iw = img.naturalWidth || img.videoWidth,
             ih = img.naturalHeight || img.videoHeight;
         if (!(ih > iw && cw > ch)) {
-            var t = dissolveT();
-            var z = DISSOLVE_MATCH ? 1 + (DISSOLVE_MATCH.z - 1) * t : 1;
-            var s = Math.max(cw / iw, ch / ih) * z;
+            var s = Math.max(cw / iw, ch / ih);
             var dw = iw * s, dh = ih * s;
-            // slide the visible window from centred cover toward the
-            // photo-matching crop as the dissolve progresses; at t=0 this
-            // is exactly the old centred draw
-            var lx = (dw - cw) / (2 * dw), ly = (dh - ch) / (2 * dh);
-            if (t > 0) {
-                lx = Math.min(Math.max(lerp(lx, DISSOLVE_MATCH.x, t), 0), 1 - cw / dw);
-                ly = Math.min(Math.max(lerp(ly, DISSOLVE_MATCH.y, t), 0), 1 - ch / dh);
-            }
-            ctx.drawImage(img, -lx * dw, -ly * dh, dw, dh);
+            ctx.drawImage(img, (cw - dw) / 2, (ch - dh) / 2, dw, dh);
             return;
         }
         applyPortraitStage();
@@ -502,27 +486,35 @@
                 // keep a frame's headroom: seeking to the exact end can
                 // report duration and freeze on a black terminator frame
                 seekDraw(Math.min(clamp01(p / VIDEO_END) * dur, dur - 0.05));
-                // during the dissolve the canvas zoom animates with the
-                // fade — repaint every tick, not only on 'seeked', or the
-                // zoom steps at video-frame granularity (slow scrolling
-                // showed it as a split-second judder against the smooth
-                // photo fade above)
-                if (dissolveT() > 0) coverDraw(scrubVideo);
             }
         }
         renderFinale(p);
     }
 
+    var dipEl = wrapper.querySelector('.hero-dip');
+
     function renderFinale(p) {
-        if (finaleLayer) {
-            var f = Math.max(smooth(span(p, PHOTO_IN[0], PHOTO_IN[1])), smooth(exitBoost));
+        if (!finaleLayer) return;
+        var f, drift;
+        if (DIP) {
+            // veil rises over the settling footage, photo switches in at
+            // full dark, veil clears as the text arrives. A hard fling
+            // (exitBoost) skips the ceremony straight to the end state.
+            var dark = smooth(span(p, DIP[0], DIP[1])) *
+                       (1 - smooth(span(p, DIP[2], DIP[3])));
+            dark *= 1 - smooth(exitBoost);
+            if (dipEl) dipEl.style.opacity = String(dark);
+            f = (p >= (DIP[1] + DIP[2]) / 2 || exitBoost >= 0.35) ? 1 : 0;
+            drift = smooth(span(p, DIP[2], 1));
+        } else {
+            f = Math.max(smooth(span(p, PHOTO_IN[0], PHOTO_IN[1])), smooth(exitBoost));
             // match the video's forward motion, decelerating to a stop
-            var drift = span(p, PHOTO_IN[0], 1);
+            drift = span(p, PHOTO_IN[0], 1);
             drift = 1 - (1 - drift) * (1 - drift) * (1 - drift);
             drift = Math.max(drift, exitBoost);
-            finaleLayer.style.opacity = String(f);
-            finaleLayer.style.transform = 'scale(' + (1 + 0.035 * drift).toFixed(4) + ')';
         }
+        finaleLayer.style.opacity = String(f);
+        finaleLayer.style.transform = 'scale(' + (1 + 0.035 * drift).toFixed(4) + ')';
     }
 
     function renderVideo(p) {
@@ -623,11 +615,7 @@
                     }
                     else { hidePoster(); return; }
                 }
-                // v9 desktop footage ends with a generated bridge that
-                // glides to rest exactly on the finale photo's framing, so
-                // the default dissolve timing needs no per-orientation
-                // override and no canvas alignment zoom (DISSOLVE_MATCH
-                // stays null; dissolveT() then self-disables).
+                if (!portrait) DIP = [0.855, 0.915, 0.925, 0.985];
                 var finaleIndex = variant.finale_layer != null ? variant.finale_layer : 0;
                 var base = manifestUrl.slice(0, manifestUrl.lastIndexOf('/') + 1);
                 // opaque context: the canvas is always fully covered, so
