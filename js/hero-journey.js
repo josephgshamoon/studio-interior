@@ -505,6 +505,12 @@
                 // keep a frame's headroom: seeking to the exact end can
                 // report duration and freeze on a black terminator frame
                 seekDraw(Math.min(clamp01(p / VIDEO_END) * dur, dur - 0.05));
+                // during the dissolve the canvas zoom animates with the
+                // fade — repaint every tick, not only on 'seeked', or the
+                // zoom steps at video-frame granularity (slow scrolling
+                // showed it as a split-second judder against the smooth
+                // photo fade above)
+                if (dissolveT() > 0) coverDraw(scrubVideo);
             }
         }
         renderFinale(p);
