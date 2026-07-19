@@ -63,11 +63,20 @@
     var rafId = null;
     var lastTime = 0;
 
+    // How far the hero has slid off-screen past the end of the pin,
+    // reaching 1 once it has exited by a quarter viewport. A hard fling
+    // can unpin the hero while the lerp is still mid-choreography — the
+    // finale would pop in during the exit (or never be seen). This is
+    // raw scroll, not smoothed time, so the finale is guaranteed settled
+    // early in the exit and unwinds seamlessly if the visitor scrolls up.
+    var exitBoost = 0;
+
     function readProgress() {
         var travel = wrapper.offsetHeight - window.innerHeight;
-        if (travel <= 0) { target = 0; return; }
+        if (travel <= 0) { target = 0; exitBoost = 0; return; }
         var y = -wrapper.getBoundingClientRect().top;
         target = clamp01(y / travel);
+        exitBoost = clamp01((y - travel) / (0.25 * window.innerHeight));
     }
 
     function tick(now) {
@@ -137,18 +146,18 @@
         // while the titles or finale are up, lighten it mid-journey so the
         // footage shows at closer to its native brightness and punch.
         if (overlay) {
-            var textiness = Math.max(1 - smooth(span(p, 0.16, 0.3)), smooth(span(p, 0.72, 0.88)));
+            var textiness = Math.max(1 - smooth(span(p, 0.16, 0.3)), smooth(span(p, 0.72, 0.88)), exitBoost);
             overlay.style.opacity = String(0.45 + 0.55 * textiness);
         }
 
         // Vignette deepens on arrival
         if (vignette) {
-            vignette.style.opacity = String(0.9 * smooth(span(p, 0.85, 0.98)));
+            vignette.style.opacity = String(0.9 * Math.max(smooth(span(p, 0.85, 0.98)), smooth(exitBoost)));
         }
 
         // Finale: arrival statement + CTAs — lands after the room resolves
         if (finale) {
-            var fin = smooth(span(p, 0.92, 0.995));
+            var fin = Math.max(smooth(span(p, 0.92, 0.995)), smooth(exitBoost));
             finale.style.opacity = String(fin);
             finale.style.transform = 'translateY(' + (34 * (1 - fin)) + 'px)';
             finale.classList.toggle('is-live', fin > 0.6);
@@ -476,10 +485,11 @@
 
     function renderFinale(p) {
         if (finaleLayer) {
-            var f = smooth(span(p, PHOTO_IN[0], PHOTO_IN[1]));
+            var f = Math.max(smooth(span(p, PHOTO_IN[0], PHOTO_IN[1])), smooth(exitBoost));
             // match the video's forward motion, decelerating to a stop
             var drift = span(p, PHOTO_IN[0], 1);
             drift = 1 - (1 - drift) * (1 - drift) * (1 - drift);
+            drift = Math.max(drift, exitBoost);
             finaleLayer.style.opacity = String(f);
             finaleLayer.style.transform = 'scale(' + (1 + 0.035 * drift).toFixed(4) + ')';
         }
