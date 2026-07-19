@@ -482,7 +482,6 @@
             drift = 1 - (1 - drift) * (1 - drift) * (1 - drift);
             finaleLayer.style.opacity = String(f);
             finaleLayer.style.transform = 'scale(' + (1 + 0.035 * drift).toFixed(4) + ')';
-            finaleLayer.style.visibility = f <= 0.001 ? 'hidden' : 'visible';
         }
     }
 
@@ -605,7 +604,11 @@
                 if (finaleLayer) {
                     finaleLayer.style.zIndex = '1'; // above the canvas
                     finaleLayer.style.opacity = '0';
-                    finaleLayer.style.visibility = 'hidden';
+                    // stays visible at opacity 0 — a hidden layer is not
+                    // rasterised, so flipping visibility at dissolve time
+                    // made the photo POP in a frame or two late on busy
+                    // machines (4K canvas + video decode) instead of fading
+                    finaleLayer.style.visibility = 'visible';
                     finaleLayer.style.transformOrigin = '50% 50%';
                     // pre-decode so the dissolve doesn't jank on first paint
                     var finaleImg = finaleLayer.querySelector('img');
