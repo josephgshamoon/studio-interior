@@ -333,12 +333,44 @@
     var seekLat = [];
 
     function noteSeekLatency() {
-        seekLat.push(performance.now() - seekT0);
-        if (seekLat.length > 8) seekLat.shift();
-        if (seekLat.length === 8) {
+        var lat = performance.now() - seekT0;
+        // one catastrophic seek (network stall, cold decoder) is enough
+        if (lat > 300) { engageHybrid(); return; }
+        seekLat.push(lat);
+        if (seekLat.length > 6) seekLat.shift();
+        if (seekLat.length === 6) {
             var s = seekLat.slice().sort(function (a, b) { return a - b; });
-            if (s[4] > 60) engageHybrid();
+            // a >40ms median is under 25 paints/sec — visibly laggy
+            if (s[3] > 40) engageHybrid();
         }
+    }
+
+    // Warm the coarse frame skeleton in the background while the video
+    // scrubs, so an engageHybrid handoff has instant material instead of
+    // starting its downloads mid-scroll (~1.5MB, low priority).
+    function warmFrames(variant, base) {
+        var pad = variant.pad || 4;
+        var count = variant.frames;
+        function src(i) {
+            var n = String(i + 1);
+            while (n.length < pad) n = '0' + n;
+            return base + variant.pattern.replace('{i}', n);
+        }
+        function warmOne(i) {
+            if (frames[i]) return;
+            var img = new Image();
+            img.decoding = 'async';
+            if ('fetchPriority' in img) img.fetchPriority = 'low';
+            function mark() { loaded[i] = true; }
+            img.onload = function () {
+                if (img.decode) img.decode().then(mark, mark);
+                else mark();
+            };
+            img.src = src(i);
+            frames[i] = img;
+        }
+        for (var i = 0; i < count; i += 6) warmOne(i);
+        warmOne(count - 1);
     }
 
     function engageHybrid() {
@@ -427,6 +459,7 @@
         scrubVideo = v;
         canvas._scrubVideo = v; // inspection handle (headless QA probes)
         mode = 'videoscrub';
+        warmFrames(variant, base);
     }
 
     function renderVideoScrub(p) {
