@@ -18,7 +18,8 @@
             "frames": 108,
             "pattern": "frames-mobile-v4/f-{i}.webp",
             "pad": 4,
-            "finale_layer": 1
+            "finale_layer": 1,
+            "full_scrub": true
         }
     }
 }

@@ -445,7 +445,9 @@
 
         function done() {
             if (--pending > 0) return;
-            if (isMobile) return; // mobile keeps the light coarse set
+            // Retina phones carry the full set (manifest full_scrub) for the
+            // smoothest scrub; non-retina phones keep the light coarse set.
+            if (isMobile && !manifest.full_scrub) return;
             // pass 2: fill everything for a fully fluid scrub, nearest
             // to the visitor's current position first so the segment
             // they are actually looking at densifies quickest
