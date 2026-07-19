@@ -207,6 +207,23 @@
     var VIDEO_END = 0.97;
     var PHOTO_IN = [0.9, 0.985];
 
+    // The widened desktop footage ends on a wider framing than the finale
+    // photo (photo ≈ its final frame zoomed 1.23x, crop window at
+    // [0.090, 0.140] — measured, +3.2% for the photo's drift scale at
+    // cover time). Crossfading two different framings double-exposes:
+    // ghost pendants, doubled window bars. So during the dissolve the
+    // canvas zooms INTO the photo's framing in lockstep with the fade —
+    // the blend is then between aligned images and reads as one
+    // continuous push-in. Landscape only; the phone's footage already
+    // ends on its photo.
+    var DISSOLVE_MATCH = null; // set at boot: { z: 1.27, x: 0.103, y: 0.153 }
+
+    function dissolveT() {
+        if (!DISSOLVE_MATCH) return 0;
+        var p = clamp01((current < 0 ? 0 : current) / JOURNEY_END);
+        return Math.max(smooth(span(p, PHOTO_IN[0], PHOTO_IN[1])), smooth(exitBoost));
+    }
+
     function sizeCanvas() {
         if (!canvas) return;
         dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -244,9 +261,19 @@
         var iw = img.naturalWidth || img.videoWidth,
             ih = img.naturalHeight || img.videoHeight;
         if (!(ih > iw && cw > ch)) {
-            var s = Math.max(cw / iw, ch / ih);
+            var t = dissolveT();
+            var z = DISSOLVE_MATCH ? 1 + (DISSOLVE_MATCH.z - 1) * t : 1;
+            var s = Math.max(cw / iw, ch / ih) * z;
             var dw = iw * s, dh = ih * s;
-            ctx.drawImage(img, (cw - dw) / 2, (ch - dh) / 2, dw, dh);
+            // slide the visible window from centred cover toward the
+            // photo-matching crop as the dissolve progresses; at t=0 this
+            // is exactly the old centred draw
+            var lx = (dw - cw) / (2 * dw), ly = (dh - ch) / (2 * dh);
+            if (t > 0) {
+                lx = Math.min(Math.max(lerp(lx, DISSOLVE_MATCH.x, t), 0), 1 - cw / dw);
+                ly = Math.min(Math.max(lerp(ly, DISSOLVE_MATCH.y, t), 0), 1 - ch / dh);
+            }
+            ctx.drawImage(img, -lx * dw, -ly * dh, dw, dh);
             return;
         }
         applyPortraitStage();
@@ -599,7 +626,10 @@
                 // it). Land the finale photo earlier on landscape screens,
                 // while that wall is still sliding, so the journey never
                 // rests on it — the photo is settled before the text.
-                if (!portrait) PHOTO_IN = [0.85, 0.935];
+                if (!portrait) {
+                    PHOTO_IN = [0.85, 0.935];
+                    DISSOLVE_MATCH = { z: 1.27, x: 0.103, y: 0.153 };
+                }
                 var finaleIndex = variant.finale_layer != null ? variant.finale_layer : 0;
                 var base = manifestUrl.slice(0, manifestUrl.lastIndexOf('/') + 1);
                 // opaque context: the canvas is always fully covered, so
