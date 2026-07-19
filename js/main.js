@@ -171,6 +171,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const hoverMode = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
+        // Tier by physical pixels (never CSS width alone): retina phones and
+        // hi-DPI desktops get the 1440-class encode; only genuinely small
+        // non-retina screens stay on the 720-class file.
+        const dpr = window.devicePixelRatio || 1;
+        const hdTier = dpr >= 1.5 || window.innerWidth * dpr > 1440;
+
+        function tileSrc(tile) {
+            return (hdTier && tile.getAttribute('data-video-hd')) ||
+                tile.getAttribute('data-video');
+        }
+
         function tileRate(tile) {
             return parseFloat(tile.getAttribute('data-video-rate')) || VIDEO_RATE;
         }
@@ -186,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 video.setAttribute('muted', '');
                 video.setAttribute('playsinline', '');
                 video.setAttribute('aria-hidden', 'true');
-                video.src = tile.getAttribute('data-video');
+                video.src = tileSrc(tile);
                 video.defaultPlaybackRate = tileRate(tile);
                 video.playbackRate = tileRate(tile);
                 video.addEventListener('playing', () => {

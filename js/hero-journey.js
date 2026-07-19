@@ -113,7 +113,7 @@
 
     window.addEventListener('scroll', requestRender, { passive: true });
     window.addEventListener('resize', function () {
-        if (mode === 'video') sizeCanvas();
+        if (mode === 'video' || mode === 'videoscrub') sizeCanvas();
         requestRender();
     });
 
@@ -212,6 +212,7 @@
         if (ctx) ctx.imageSmoothingQuality = 'high';
         // repaint in the same task so a real resize never shows a blank
         if (mode === 'video' && current >= 0) render(current);
+        if (mode === 'videoscrub' && scrubReady) coverDraw(scrubVideo);
     }
 
     function nearestLoadedIndex(index) {
@@ -230,7 +231,8 @@
 
     function coverDraw(img) {
         var cw = canvas.width, ch = canvas.height;
-        var iw = img.naturalWidth, ih = img.naturalHeight;
+        var iw = img.naturalWidth || img.videoWidth,
+            ih = img.naturalHeight || img.videoHeight;
         if (!(ih > iw && cw > ch)) {
             var s = Math.max(cw / iw, ch / ih);
             var dw = iw * s, dh = ih * s;
@@ -305,8 +307,87 @@
         }
     }
 
-    function renderVideo(p) {
-        drawFrame(clamp01(p / VIDEO_END) * (frameCount - 1));
+    /* ---------- mode: videoscrub — seek a dense-keyframe (g=6) mp4 ----------
+       High-DPI desktop screens scrub a real <video> tier instead of the
+       1280px webp frames: full 24fps granularity at 1440/2160-class
+       resolution for a fraction of the bytes a frame set would cost.
+       Seeks are chained (never more than one in flight); the webp frame
+       path remains the fallback if the video errors or stalls. */
+
+    var scrubVideo = null;
+    var scrubReady = false;
+    var seekBusy = false;
+    var seekPending = -1;
+
+    function seekDraw(t) {
+        if (!scrubReady) return;
+        if (seekBusy) { seekPending = t; return; }
+        if (Math.abs(scrubVideo.currentTime - t) < 0.012) return; // same frame
+        seekBusy = true;
+        scrubVideo.currentTime = t;
+    }
+
+    function initVideoScrub(tier, variant, base) {
+        var v = document.createElement('video');
+        v.muted = true;
+        v.playsInline = true;
+        v.preload = 'auto';
+        var fellBack = false;
+        function fallbackToFrames() {
+            if (fellBack) return;
+            fellBack = true;
+            scrubVideo = null;
+            scrubReady = false;
+            v.removeAttribute('src');
+            v.load(); // abort the stream — free the bandwidth for frames
+            mode = 'video';
+            loadFrames(variant, base);
+            requestRender();
+        }
+        // If the tier can't produce a first frame quickly, drop to frames —
+        // the visitor should never stare at the poster on a stuck request.
+        var bootTimer = setTimeout(fallbackToFrames, 8000);
+        v.addEventListener('error', fallbackToFrames);
+        v.addEventListener('loadeddata', function () {
+            if (fellBack) return;
+            clearTimeout(bootTimer);
+            scrubReady = true;
+            // paint frame 0 now — the first seek may be to t=0, which
+            // fires no 'seeked', and the poster must not linger
+            coverDraw(v);
+            hidePoster();
+            requestRender();
+        });
+        v.addEventListener('seeked', function () {
+            if (fellBack || !scrubReady) return;
+            coverDraw(v);
+            hidePoster();
+            seekBusy = false;
+            if (seekPending >= 0) {
+                var t = seekPending;
+                seekPending = -1;
+                seekDraw(t);
+            }
+        });
+        v.src = tier.src;
+        scrubVideo = v;
+        canvas._scrubVideo = v; // inspection handle (headless QA probes)
+        mode = 'videoscrub';
+    }
+
+    function renderVideoScrub(p) {
+        if (scrubReady) {
+            var dur = scrubVideo.duration || 0;
+            if (dur > 0) {
+                // keep a frame's headroom: seeking to the exact end can
+                // report duration and freeze on a black terminator frame
+                seekDraw(Math.min(clamp01(p / VIDEO_END) * dur, dur - 0.05));
+            }
+        }
+        renderFinale(p);
+    }
+
+    function renderFinale(p) {
         if (finaleLayer) {
             var f = smooth(span(p, PHOTO_IN[0], PHOTO_IN[1]));
             // match the video's forward motion, decelerating to a stop
@@ -316,6 +397,11 @@
             finaleLayer.style.transform = 'scale(' + (1 + 0.035 * drift).toFixed(4) + ')';
             finaleLayer.style.visibility = f <= 0.001 ? 'hidden' : 'visible';
         }
+    }
+
+    function renderVideo(p) {
+        drawFrame(clamp01(p / VIDEO_END) * (frameCount - 1));
+        renderFinale(p);
     }
 
     function loadFrames(manifest, base) {
@@ -381,6 +467,7 @@
     function render(p) {
         p = clamp01(p / JOURNEY_END);
         if (mode === 'video') renderVideo(p);
+        else if (mode === 'videoscrub') renderVideoScrub(p);
         else renderZoom(p);
         renderText(p);
     }
@@ -397,8 +484,15 @@
                 // over-crops on a portrait screen, so without one keep zoom mode.
                 var portrait = hero.clientHeight > hero.clientWidth;
                 var variant = manifest;
+                var effDpr = Math.min(window.devicePixelRatio || 1, 2);
                 if (portrait) {
-                    if (manifest.mobile && manifest.mobile.frames) variant = manifest.mobile;
+                    if (manifest.mobile && manifest.mobile.frames) {
+                        variant = manifest.mobile;
+                        // retina phones get the portrait hi-res cut
+                        if (effDpr >= 2 && variant.hd && variant.hd.frames) {
+                            variant = variant.hd;
+                        }
+                    }
                     else { hidePoster(); return; }
                 }
                 var finaleIndex = variant.finale_layer != null ? variant.finale_layer : 0;
@@ -409,7 +503,6 @@
                 // produces visible tearing/flicker on some mobile GPUs.
                 ctx = canvas.getContext('2d', { alpha: false });
                 sizeCanvas();
-                mode = 'video';
                 canvas.hidden = false;
                 layers.forEach(function (el, i) { el.style.display = i === finaleIndex ? '' : 'none'; });
                 finaleLayer = layers[finaleIndex] || null;
@@ -425,7 +518,22 @@
                 // portrait-footage hint on a landscape viewport: stage the
                 // poster and finale before the first frame even paints
                 if (!portrait && variant.width && variant.width < 1000) applyPortraitStage();
-                loadFrames(variant, base);
+                // Landscape hi-DPI screens scrub a dense-keyframe video tier
+                // instead of the webp frames — picked by physical pixels
+                // (innerWidth x devicePixelRatio), never CSS width alone.
+                var tier = null;
+                if (!portrait && manifest.tiers && window.HTMLVideoElement) {
+                    var phys = window.innerWidth * effDpr;
+                    for (var ti = 0; ti < manifest.tiers.length; ti++) {
+                        if (phys >= manifest.tiers[ti].min_phys) { tier = manifest.tiers[ti]; break; }
+                    }
+                }
+                if (tier) {
+                    initVideoScrub(tier, variant, base);
+                } else {
+                    mode = 'video';
+                    loadFrames(variant, base);
+                }
                 requestRender();
             })
             .catch(function () { hidePoster(); /* no frames — zoom mode stays */ });

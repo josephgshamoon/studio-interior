@@ -5,10 +5,20 @@
     "width": 1280,
     "poster": "poster.jpg",
     "finale_layer": 0,
+    "tiers": [
+        { "min_phys": 2801, "src": "videos/hero/hero-desktop-2160.mp4" },
+        { "min_phys": 1441, "src": "videos/hero/hero-desktop-1440.mp4" }
+    ],
     "mobile": {
         "frames": 108,
         "pattern": "frames-mobile-v3/f-{i}.webp",
         "pad": 4,
-        "finale_layer": 1
+        "finale_layer": 1,
+        "hd": {
+            "frames": 108,
+            "pattern": "frames-mobile-v4/f-{i}.webp",
+            "pad": 4,
+            "finale_layer": 1
+        }
     }
 }
