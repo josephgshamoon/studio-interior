@@ -861,6 +861,31 @@ input, textarea, select {
     transform: scale(1.06);
 }
 
+/* Service pages: content + sticky ambient media column */
+.service-layout {
+    display: grid;
+    gap: 60px;
+    align-items: start;
+}
+
+.service-media { display: none; }
+
+@media (min-width: 1024px) {
+    .service-layout {
+        grid-template-columns: minmax(0, 1fr) 400px;
+    }
+    .service-media {
+        display: block;
+        position: sticky;
+        top: 120px;
+    }
+    .service-media .portfolio-image {
+        height: auto;
+        aspect-ratio: 3 / 4;
+        border-radius: 4px;
+    }
+}
+
 .portfolio-overlay {
     position: absolute;
     inset: 0;
