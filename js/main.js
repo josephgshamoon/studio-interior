@@ -398,6 +398,24 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- Nav anchor clicks jump straight to their section ---
+    // The page scrolls smoothly by default, so an anchor click from the top
+    // would ride the whole hero journey scrub on the way down. Nav clicks
+    // are wayfinding, not sightseeing: jump instantly.
+    document.querySelectorAll('a.nav-link[href^="#"]').forEach(link => {
+        link.addEventListener('click', (e) => {
+            const target = document.querySelector(link.getAttribute('href'));
+            if (!target) return;
+            e.preventDefault();
+            const root = document.documentElement;
+            const prev = root.style.scrollBehavior;
+            root.style.scrollBehavior = 'auto';
+            target.scrollIntoView();
+            root.style.scrollBehavior = prev;
+            history.pushState(null, '', link.getAttribute('href'));
+        });
+    });
+
     // --- Active nav link on scroll ---
     const sections = document.querySelectorAll('section[id]');
     const navLinks = document.querySelectorAll('.nav-link');
