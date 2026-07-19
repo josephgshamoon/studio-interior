@@ -632,10 +632,11 @@
                 // it). Land the finale photo earlier on landscape screens,
                 // while that wall is still sliding, so the journey never
                 // rests on it — the photo is settled before the text.
-                if (!portrait) {
-                    PHOTO_IN = [0.85, 0.935];
-                    DISSOLVE_MATCH = { z: 1.27, x: 0.103, y: 0.153 };
-                }
+                // Landscape: land the photo while the footage is still in
+                // motion (the widened tail parks on an outpainted wall).
+                // No DISSOLVE_MATCH zoom — the owner reads any synthetic
+                // camera move at the end as footage that isn't theirs.
+                if (!portrait) PHOTO_IN = [0.85, 0.935];
                 var finaleIndex = variant.finale_layer != null ? variant.finale_layer : 0;
                 var base = manifestUrl.slice(0, manifestUrl.lastIndexOf('/') + 1);
                 // opaque context: the canvas is always fully covered, so
