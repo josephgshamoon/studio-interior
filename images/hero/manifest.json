@@ -1,7 +1,8 @@
 {
-    "frames": 168,
+    "frames": 155,
     "pattern": "frames-v8/f-{i}.webp",
     "pad": 4,
+    "end": 7.42,
     "width": 1280,
     "poster": "poster-v8.jpg",
     "finale_layer": 0,

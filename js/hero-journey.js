@@ -422,10 +422,18 @@
         requestRender();
     }
 
+    // Manifest "end" trims the scrub before the footage's final
+    // settle-back (the tail parks on the outpainted wall) — the frame
+    // set is capped via "frames", this caps the video path to match.
+    // One manifest edit, fully reversible, no re-encode.
+    function effDur(d) {
+        return scrubVariant && scrubVariant.end ? Math.min(scrubVariant.end, d) : d;
+    }
+
     // One sharp 4K paint at rest: called when the render loop goes idle.
     function idleSharpen() {
         if (!idleVideo || mode !== 'video') return;
-        var dur = idleVideo.duration;
+        var dur = effDur(idleVideo.duration);
         if (!dur) return;
         var frac = clamp01(clamp01(target / JOURNEY_END) / VIDEO_END);
         if (frac >= 1) return; // finale photo covers the canvas
@@ -500,7 +508,7 @@
 
     function renderVideoScrub(p) {
         if (scrubReady) {
-            var dur = scrubVideo.duration || 0;
+            var dur = effDur(scrubVideo.duration || 0);
             if (dur > 0) {
                 // keep a frame's headroom: seeking to the exact end can
                 // report duration and freeze on a black terminator frame
