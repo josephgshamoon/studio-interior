@@ -58,15 +58,23 @@ tile res-girls-room-4k.mp4         res-girls-room         720:960 1440:1920 "$SL
 tile res-kitchen-ascot-4k.mp4      res-kitchen-ascot      720:960 1440:1920 "$SLOW3"
 
 # hero scrub tiers — dense keyframes for seek-scrubbing
+# (v5 take, job 2a5c9f42: door-continuity fix, 2026-07-19)
 echo "== hero desktop tiers"
-$FF -i "$M/hero-desktop-v4-4k.mp4" -vf "scale=2560:1440:flags=lanczos" \
-    $X264 -crf 20 -g 6 -keyint_min 6 "$HERO/hero-desktop-1440.mp4"
-$FF -i "$M/hero-desktop-v4-4k.mp4" -vf "scale=3840:2160:flags=lanczos" \
-    $X264 -crf 21 -g 6 -keyint_min 6 "$HERO/hero-desktop-2160.mp4"
+$FF -i "$M/hero-desktop-v5-4k.mp4" -vf "scale=2560:1440:flags=lanczos" \
+    $X264 -crf 20 -g 6 -keyint_min 6 "$HERO/hero-desktop-1440-v5.mp4"
+$FF -i "$M/hero-desktop-v5-4k.mp4" -vf "scale=3840:2160:flags=lanczos" \
+    $X264 -crf 21 -g 6 -keyint_min 6 "$HERO/hero-desktop-2160-v5.mp4"
 
-# posters at each tier's own native resolution, from the tier's own footage
-$FF -i "$HERO/hero-desktop-1440.mp4" -vframes 1 -q:v 3 "$IMG/poster-1440.jpg"
-$FF -i "$HERO/hero-desktop-2160.mp4" -vframes 1 -q:v 4 "$IMG/poster-2160.jpg"
+# desktop scrub frame set + posters at each tier's own native resolution
+echo "== desktop v5 frames"
+DDUR=$(ffprobe -v error -select_streams v:0 -show_entries format=duration -of csv=p=0 "$M/hero-desktop-v5-4k.mp4")
+DFPS=$(python3 -c "print(min(24, 168 / $DDUR))")
+rm -rf "$IMG/frames-v5"; mkdir -p "$IMG/frames-v5"
+$FF -i "$M/hero-desktop-v5-4k.mp4" -vf "fps=${DFPS},scale=1280:-2:flags=lanczos" \
+    -c:v libwebp -quality 80 -preset photo "$IMG/frames-v5/f-%04d.webp"
+$FF -i "$M/hero-desktop-v5-4k.mp4" -vf "scale=1280:-2:flags=lanczos" -vframes 1 -q:v 3 "$IMG/poster-v5.jpg"
+$FF -i "$HERO/hero-desktop-1440-v5.mp4" -vframes 1 -q:v 3 "$IMG/poster-1440-v5.jpg"
+$FF -i "$HERO/hero-desktop-2160-v5.mp4" -vframes 1 -q:v 4 "$IMG/poster-2160-v5.jpg"
 
 # retina-phone portrait frame set (canvas backing caps at DPR 2: 900x1600
 # covers a 390pt phone's 780px-wide backing with headroom)

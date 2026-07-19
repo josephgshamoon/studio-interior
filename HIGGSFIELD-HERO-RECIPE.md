@@ -21,6 +21,21 @@ to the full cinematic version.
 > ending on `images/res-kitchen-ascot-hero.jpg`. finale_layer 0 =
 > wide kitchen (desktop), 1 = portrait kitchen (mobile).
 >
+> Update 19 July 2026 — desktop take v5 (job 2a5c9f42) replaced v4:
+> at 4K sharpness v4's through-door interior visibly morphed (two tall
+> stools at a white counter when distant → different room up close).
+> v5 was regenerated with the SAME recipe (mobile take as
+> video_references + kitchen-wide end_image, 36 credits) plus an
+> explicit CRITICAL CONTINUITY prompt block pinning the through-door
+> furniture; the door now reads open throughout (no opening beat,
+> matching the mobile take) and the kitchen island is visible and
+> consistent from frame 1. Upscaled to 3840x2160 via Higgsfield
+> upscale_video (provider topaz, 2160p, 11 credits — no cost preflight
+> exists, it bills blind; fal was balance-locked at the time). Master:
+> ~/studiochenille-masters/4k/hero-desktop-v5-4k.mp4. Assets shipped as
+> frames-v5/, poster-v5.jpg, poster-1440/2160-v5.jpg,
+> hero-desktop-1440/2160-v5.mp4.
+>
 > QA lessons: sample EVERY frame of a door transit (the v3 desktop
 > take's self-closing door hid between 1fps samples); `video_references`
 > imposes the reference's layout — poison when changing the shot's
