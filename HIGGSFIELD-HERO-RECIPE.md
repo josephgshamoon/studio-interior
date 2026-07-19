@@ -45,14 +45,18 @@ to the full cinematic version.
 > orientation-flip reload guard (a half-snapped window maximised later
 > no longer keeps the phone variant on a laptop).
 >
-> Final update 19 July 2026 — after seeing v4's doorway morph again at
-> 4K ("chairs then something different"), the owner asked for "the same
-> video as the phone in 16:9" and approved redeploying the v5 remake
-> (shipped as `-v5b` names). This is the FINAL deployed state: desktop
-> = v5 remake (consistent doorway, matches the mobile take's journey),
-> phone = mobile v3 take. hero-journey.js v15 adds adaptive scrub: each
-> machine times its own seeks and, if 4K seek-decode is slow, switches
-> to webp frames for motion while the video re-sharpens stills at rest.
+> Final update 19 July 2026 — deployed desktop take is v6 (job
+> 104dc5b9), which recreates the PHONE take's journey in 16:9: v5's
+> remake had cured the doorway morph but walked straight into the
+> kitchen where the phone (and v4) bend LEFT. v6 = v4's exact original
+> recipe (mobile take video_references + manor image ref + kitchen-wide
+> end_image + "recreate the reference journey exactly" prompt) plus the
+> CRITICAL CONTINUITY doorway block. Both earlier desktop takes are
+> retired; masters for every take remain in ~/studiochenille-masters/.
+> Phone = mobile v3 take, unchanged throughout. hero-journey.js v15
+> adds adaptive scrub: each machine times its own seeks and, if 4K
+> seek-decode is slow, switches to webp frames for motion while the
+> video re-sharpens stills at rest.
 >
 > QA lessons: sample EVERY frame of a door transit (the v3 desktop
 > take's self-closing door hid between 1fps samples); `video_references`
