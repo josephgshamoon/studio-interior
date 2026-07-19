@@ -584,6 +584,13 @@
                     }
                     else { hidePoster(); return; }
                 }
+                // The widened 16:9 footage never fully clears the doorway:
+                // an outpainted blank wall parks across the right quarter
+                // for the last ~0.7s (the phone's portrait crop never sees
+                // it). Land the finale photo earlier on landscape screens,
+                // while that wall is still sliding, so the journey never
+                // rests on it — the photo is settled before the text.
+                if (!portrait) PHOTO_IN = [0.85, 0.935];
                 var finaleIndex = variant.finale_layer != null ? variant.finale_layer : 0;
                 var base = manifestUrl.slice(0, manifestUrl.lastIndexOf('/') + 1);
                 // opaque context: the canvas is always fully covered, so
