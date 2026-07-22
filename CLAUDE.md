@@ -89,13 +89,17 @@ always use a new filename (`?v` doesn't protect immutable-cached media).
 
 ### Higgsfield / AI asset generation
 
-Video/image generation now runs pay-per-use on **fal.ai** via the `media-gen`
-skill (July 2026: Seedance 2.0 i2v $0.30/s std 720p, Kling 3 std $0.084/s;
-always state the dollar cost before submitting). The Higgsfield MCP connector
-remains available as fallback: there is no unlimited Seedance on the owner's
-Higgsfield Plus plan — Seedance 2.0 **bills credits everywhere** (web app and
-Claude MCP connector alike, ~4.5 credits/second at 720p std). Preflight with
-`get_cost: true` and check `balance` before generating anything.
+Two approved generation routes (July 2026) — pick per task and always state
+the cost before submitting:
+
+- **Higgsfield MCP** (`higgsfield` server in this project's MCP config, plus
+  the claude.ai connector) — re-enabled July 2026, bills the owner's Plus-plan
+  credits. There is no unlimited Seedance on Plus — Seedance 2.0 **bills
+  credits everywhere** (web app and MCP alike, ~4.5 credits/second at 720p
+  std). Preflight with `get_cost: true` and check `balance` before generating.
+- **fal.ai** via the `media-gen` skill — pay-per-use in dollars (Seedance 2.0
+  i2v $0.30/s std 720p, Kling 3 std $0.084/s; key in `~/.fal_key`, never in
+  this public repo).
 
 ## Conventions
 
