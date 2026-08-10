@@ -818,6 +818,16 @@ input, textarea, select {
     grid-column: span 2;
 }
 
+/* Applied by the filter JS when the visible tiles balance as pairs —
+   avoids an orphaned last tile in a three-across row. */
+.portfolio-grid.two-col {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.portfolio-grid.two-col .portfolio-image {
+    height: 440px;
+}
+
 .portfolio-image {
     position: relative;
     width: 100%;
@@ -1519,7 +1529,8 @@ input, textarea, select {
         flex-basis: 100%;
     }
 
-    .portfolio-grid {
+    .portfolio-grid,
+    .portfolio-grid.two-col {
         grid-template-columns: 1fr;
     }
 
@@ -1528,7 +1539,8 @@ input, textarea, select {
     }
 
     .portfolio-image,
-    .portfolio-item.large .portfolio-image {
+    .portfolio-item.large .portfolio-image,
+    .portfolio-grid.two-col .portfolio-image {
         height: 280px;
     }
 

@@ -132,14 +132,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const portfolioItems = document.querySelectorAll('.portfolio-item');
 
     function applyFilter(filter) {
+        let columnUnits = 0;
         portfolioItems.forEach(item => {
             if (filter === 'all' || item.getAttribute('data-category') === filter) {
                 item.classList.remove('hidden');
                 item.style.animation = 'fadeIn 0.5s ease forwards';
+                columnUnits += item.classList.contains('large') ? 2 : 1;
             } else {
                 item.classList.add('hidden');
             }
         });
+        // A tile count that can't fill three-across rows (but pairs up
+        // evenly) drops to two columns, so no tile sits orphaned.
+        const grid = document.getElementById('portfolioGrid');
+        if (grid) {
+            grid.classList.toggle('two-col', columnUnits % 3 !== 0 && columnUnits % 2 === 0);
+        }
     }
 
     filterBtns.forEach(btn => {
