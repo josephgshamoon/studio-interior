@@ -54,7 +54,9 @@
 }
 
 html {
-    scroll-behavior: smooth;
+    /* No CSS smooth scrolling: landing on index.html#section from another
+       page would animate from the top straight through the hero journey.
+       In-page anchor clicks get smooth scrolling from main.js instead. */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-size: 16px;

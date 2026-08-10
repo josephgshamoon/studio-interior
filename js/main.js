@@ -71,7 +71,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 e.preventDefault();
                 const offset = 80;
                 const top = target.getBoundingClientRect().top + window.scrollY - offset;
-                window.scrollTo({ top, behavior: 'smooth' });
+                // Jump instantly if the scroll would pass through the pinned
+                // hero journey — smooth-scrolling it replays the whole zoom
+                // sequence at high speed (a vestibular/motion trigger).
+                let behavior = 'smooth';
+                if (heroJourney) {
+                    const journeyEnd = heroJourney.offsetTop + heroJourney.offsetHeight - window.innerHeight;
+                    if (window.scrollY < journeyEnd && top > window.scrollY) {
+                        behavior = 'auto';
+                    }
+                }
+                window.scrollTo({ top, behavior });
             }
         });
     });
