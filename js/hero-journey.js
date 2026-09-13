@@ -363,8 +363,17 @@
     // until the laptop tier is decodable, then returns to its own text.
     var hintLabel = scrollHint ? scrollHint.querySelector('span') : null;
     var hintText = hintLabel ? hintLabel.textContent : '';
+    var hintTimer = null;
     function setHint(loading) {
-        if (hintLabel) hintLabel.textContent = loading ? 'Loading film' : hintText;
+        clearTimeout(hintTimer);
+        if (!hintLabel) return;
+        // a warm-cache film lands in well under a second — don't flash
+        // the loading label for a load nobody would have noticed
+        if (loading) {
+            hintTimer = setTimeout(function () { hintLabel.textContent = 'Loading film'; }, 600);
+        } else {
+            hintLabel.textContent = hintText;
+        }
     }
 
     // Not every machine can seek-decode 4K fast enough for a fluid scrub.
@@ -531,15 +540,11 @@
                 return;
             }
             scrubReady = true;
-            // the element paints its first frame itself; nudge off zero so
-            // every browser commits it (counted as a seek so the latency
-            // probe doesn't read the boot as a stall)
-            if (v.currentTime < 0.02) {
-                seekT0 = performance.now();
-                lastSeekAt = seekT0;
-                v.currentTime = 0.001;
-            }
-            hidePoster();
+            // No reveal here: the poster is the film's own first frame, so
+            // swapping them at rest could only show a difference (a JPEG
+            // and a video element don't render with identical colour) as
+            // a blink in plain view. The poster stays until the first
+            // scroll-seek lands and the film is genuinely moving.
             requestRender();
         });
         v.addEventListener('seeked', function () {
@@ -550,7 +555,7 @@
             }
             if (fellBack || !scrubReady) return;
             noteSeekLatency();
-            hidePoster();
+            hidePoster(); // first seek landed: the film takes over in motion
             // a seek requested while this one was in flight was dropped —
             // settle on the frame the scroll actually rests at
             requestRender();
