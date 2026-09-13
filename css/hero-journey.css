@@ -16,8 +16,11 @@
 
 .hero-journey.is-journey {
     /* the journey completes ~80% in; the rest is a hold zone that
-       absorbs scroll momentum so the finale isn't overshot */
-    height: 380vh;
+       absorbs scroll momentum so the finale isn't overshot.
+       320vh puts the laptop at the phone's pacing (~23vh of scroll per
+       second of footage); the old 380vh needed ~50% more scrolling per
+       footage-second and read as the house crawling by. */
+    height: 320vh;
 }
 
 @media (max-width: 768px) {

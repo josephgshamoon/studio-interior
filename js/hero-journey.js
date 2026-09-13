@@ -376,8 +376,10 @@
         if (seekLat.length > 6) seekLat.shift();
         if (seekLat.length === 6) {
             var s = seekLat.slice().sort(function (a, b) { return a - b; });
-            // a >40ms median is under 25 paints/sec — visibly laggy
-            if (s[3] > 40) engageHybrid();
+            // a >20ms median is under 50 paints/sec — against the phone's
+            // instant webp frames that reads as heavy and laggy, so hand
+            // motion to the frames and keep the video for the still at rest
+            if (s[3] > 20) engageHybrid();
         }
     }
 
