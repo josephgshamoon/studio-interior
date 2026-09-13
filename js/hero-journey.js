@@ -239,7 +239,6 @@
         if (ctx) ctx.imageSmoothingQuality = 'high';
         // repaint in the same task so a real resize never shows a blank
         if (mode === 'video' && current >= 0) render(current);
-        if (mode === 'videoscrub' && scrubReady) coverDraw(scrubVideo);
     }
 
     function nearestLoadedIndex(index) {
@@ -348,15 +347,25 @@
        High-DPI desktop screens scrub a real <video> tier instead of the
        1280px webp frames: full 24fps granularity at 1440/2160-class
        resolution for a fraction of the bytes a frame set would cost.
-       Seeks are chained (never more than one in flight); the webp frame
-       path remains the fallback if the video errors or stalls. */
+       The film is downloaded whole and scrubbed from memory, and the
+       <video> element is shown directly (no canvas copy per frame) so
+       the compositor paints each decoded frame the instant its seek
+       lands. The webp frame path remains the fallback if the video
+       errors or stalls. */
 
     var scrubVideo = null;
     var scrubReady = false;
-    var seekBusy = false;
-    var seekPending = -1;
+    var lastSeekAt = 0;
     var scrubVariant = null;
     var scrubBase = '';
+
+    // The scroll cue doubles as the film's loading state ("Loading film")
+    // until the laptop tier is decodable, then returns to its own text.
+    var hintLabel = scrollHint ? scrollHint.querySelector('span') : null;
+    var hintText = hintLabel ? hintLabel.textContent : '';
+    function setHint(loading) {
+        if (hintLabel) hintLabel.textContent = loading ? 'Loading film' : hintText;
+    }
 
     // Not every machine can seek-decode 4K fast enough for a fluid scrub.
     // Each visitor's device measures its own seek latency; if the rolling
@@ -376,10 +385,10 @@
         if (seekLat.length > 6) seekLat.shift();
         if (seekLat.length === 6) {
             var s = seekLat.slice().sort(function (a, b) { return a - b; });
-            // a >20ms median is under 50 paints/sec — against the phone's
-            // instant webp frames that reads as heavy and laggy, so hand
-            // motion to the frames and keep the video for the still at rest
-            if (s[3] > 20) engageHybrid();
+            // a >40ms median is under 25 paints/sec — visibly laggy. With
+            // the film scrubbed from memory and shown directly this is
+            // pure decode time, so only genuinely slow decoders trip it.
+            if (s[3] > 40) engageHybrid();
         }
     }
 
@@ -417,8 +426,11 @@
         idleVideo = scrubVideo;
         scrubVideo = null;
         scrubReady = false;
-        seekBusy = false;
-        seekPending = -1;
+        // the canvas takes over motion: seed it with the frame on screen
+        // so the handoff is invisible, then step the video element aside
+        coverDraw(idleVideo);
+        idleVideo.hidden = true;
+        canvas.hidden = false;
         mode = 'video';
         loadFrames(scrubVariant, scrubBase);
         requestRender();
@@ -442,30 +454,55 @@
         idleVideo.currentTime = Math.min(frac * dur, dur - 0.05);
     }
 
-    function seekDraw(t) {
+    // The video element paints each decoded frame itself, so a seek is
+    // fire-and-forget: one in flight at a time (issuing a new seek every
+    // frame while one is pending can wedge WebKit's decoder), with a 500ms
+    // escape hatch in case a 'seeked' never lands.
+    function seekTo(t) {
         if (!scrubReady) return;
-        if (seekBusy) { seekPending = t; return; }
-        if (Math.abs(scrubVideo.currentTime - t) < 0.012) return; // same frame
-        seekBusy = true;
-        seekT0 = performance.now();
-        scrubVideo.currentTime = t;
+        var v = scrubVideo;
+        var delta = t - v.currentTime;
+        if (Math.abs(delta) < 0.012) return; // same frame
+        var now = performance.now();
+        if (v.seeking && now - lastSeekAt < 500) return;
+        seekT0 = now;
+        lastSeekAt = now;
+        // a big jump (a flick, an anchor arrival) lands on the nearest
+        // keyframe where supported — never more than 3 frames off at g=6
+        if (Math.abs(delta) > 0.3 && typeof v.fastSeek === 'function') v.fastSeek(t);
+        else v.currentTime = t;
     }
 
     function initVideoScrub(tier, variant, base) {
         scrubVariant = variant;
         scrubBase = base;
         var v = document.createElement('video');
+        v.className = 'hero-film';
         v.muted = true;
         v.playsInline = true;
         v.preload = 'auto';
+        v.setAttribute('aria-hidden', 'true');
+        // The whole film is downloaded into memory and scrubbed from there:
+        // every seek is against local bytes, so no seek can ever stall on
+        // a range that hasn't arrived (the cold-visit lag). Data Saver
+        // streams instead — never force-download megabytes of film.
+        var conn = navigator.connection;
+        var blobMode = !(conn && conn.saveData);
         var fellBack = false;
         function fallbackToFrames() {
             if (fellBack) return;
             fellBack = true;
             scrubVideo = null;
             scrubReady = false;
-            v.removeAttribute('src');
-            v.load(); // abort the stream — free the bandwidth for frames
+            v.hidden = true;
+            canvas.hidden = false;
+            // streaming: abort the request — free the bandwidth for frames.
+            // blob: let the download finish; it upgrades the still at rest.
+            if (!blobMode) {
+                v.removeAttribute('src');
+                v.load();
+            }
+            setHint(false);
             mode = 'video';
             loadFrames(variant, base);
             requestRender();
@@ -474,13 +511,34 @@
         // the visitor should never stare at the poster on a stuck request.
         var bootTimer = setTimeout(fallbackToFrames, 8000);
         v.addEventListener('error', fallbackToFrames);
+        v.addEventListener('loadedmetadata', function () {
+            // portrait footage on a landscape stage is shown whole, as the
+            // canvas path does (coverDraw) — never crop-zoomed
+            if (v.videoHeight > v.videoWidth && hero.clientWidth > hero.clientHeight) {
+                v.classList.add('is-contain');
+                applyPortraitStage();
+            }
+        });
         v.addEventListener('loadeddata', function () {
-            if (fellBack) return;
             clearTimeout(bootTimer);
+            setHint(false);
+            if (fellBack) {
+                // The film landed after the frames took over the scroll:
+                // keep it for the sharp still whenever scrolling pauses.
+                hybrid = true;
+                idleVideo = v;
+                if (rafId === null) idleSharpen();
+                return;
+            }
             scrubReady = true;
-            // paint frame 0 now — the first seek may be to t=0, which
-            // fires no 'seeked', and the poster must not linger
-            coverDraw(v);
+            // the element paints its first frame itself; nudge off zero so
+            // every browser commits it (counted as a seek so the latency
+            // probe doesn't read the boot as a stall)
+            if (v.currentTime < 0.02) {
+                seekT0 = performance.now();
+                lastSeekAt = seekT0;
+                v.currentTime = 0.001;
+            }
             hidePoster();
             requestRender();
         });
@@ -492,36 +550,49 @@
             }
             if (fellBack || !scrubReady) return;
             noteSeekLatency();
-            coverDraw(v);
             hidePoster();
-            seekBusy = false;
-            if (seekPending >= 0) {
-                var t = seekPending;
-                seekPending = -1;
-                seekDraw(t);
-            }
+            // a seek requested while this one was in flight was dropped —
+            // settle on the frame the scroll actually rests at
+            requestRender();
         });
-        v.src = tier.src;
+        // the film sits where the canvas would paint; the canvas stays
+        // for the frame path (fallback and hybrid motion)
+        canvas.parentNode.insertBefore(v, canvas);
+        canvas.hidden = true;
         scrubVideo = v;
         canvas._scrubVideo = v; // inspection handle (headless QA probes)
         mode = 'videoscrub';
+        setHint(true);
+        if (blobMode) {
+            // index.html starts this fetch at HTML parse time; pick that
+            // promise up rather than downloading the film twice
+            var pre = window.__heroFilm;
+            var film = (pre && pre.url === tier.src)
+                ? pre.blob
+                : fetch(tier.src).then(function (r) {
+                    if (!r.ok) throw new Error(String(r.status));
+                    return r.blob();
+                });
+            film.then(function (blob) {
+                v.src = URL.createObjectURL(blob);
+            }).catch(function () {
+                // blob route failed (network error, memory pressure):
+                // stream so the film still plays
+                blobMode = false;
+                v.src = tier.src;
+            });
+        } else {
+            v.src = tier.src;
+        }
         warmFrames(variant, base);
     }
 
     function renderVideoScrub(p) {
         if (scrubReady) {
             var dur = effDur(scrubVideo.duration || 0);
-            if (dur > 0) {
-                // keep a frame's headroom: seeking to the exact end can
-                // report duration and freeze on a black terminator frame
-                seekDraw(Math.min(clamp01(p / VIDEO_END) * dur, dur - 0.05));
-                // during the dissolve the canvas zoom animates with the
-                // fade — repaint every tick, not only on 'seeked', or the
-                // zoom steps at video-frame granularity (slow scrolling
-                // showed it as a split-second judder against the smooth
-                // photo fade above)
-                if (dissolveT() > 0) coverDraw(scrubVideo);
-            }
+            // keep a frame's headroom: seeking to the exact end can
+            // report duration and freeze on a black terminator frame
+            if (dur > 0) seekTo(Math.min(clamp01(p / VIDEO_END) * dur, dur - 0.05));
         }
         renderFinale(p);
     }

@@ -56,7 +56,25 @@
     <!-- Styles -->
     <link rel="stylesheet" href="css/style.css?v=12">
     <link rel="stylesheet" href="css/effects.css?v=7">
-    <link rel="stylesheet" href="css/hero-journey.css?v=11">
+    <link rel="stylesheet" href="css/hero-journey.css?v=12">
+    <!-- Start downloading the hero film at HTML parse time, before any
+         script has loaded: hero-journey.js picks this promise up and scrubs
+         the film from memory. Landscape hi-DPI screens only (phones scrub
+         webp frames); skipped on Data Saver / reduced motion. The tier
+         thresholds mirror "tiers" in images/hero/manifest.json — keep in sync. -->
+    <script>
+    (function(){try{
+        if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+        var c=navigator.connection;if(c&&c.saveData)return;
+        if(innerHeight>innerWidth||!window.HTMLVideoElement||!window.fetch)return;
+        var w=innerWidth*Math.min(devicePixelRatio||1,2);
+        var u=w>=2801?'videos/hero/hero-desktop-2160-v8.mp4':w>=1441?'videos/hero/hero-desktop-1440-v8.mp4':null;
+        if(!u)return;
+        var p=fetch(u).then(function(r){if(!r.ok)throw new Error(String(r.status));return r.blob()});
+        p.catch(function(){});
+        window.__heroFilm={url:u,blob:p};
+    }catch(e){}})();
+    </script>
     <link rel="preload" as="image" href="images/hero/poster-v8.jpg" imagesrcset="images/hero/poster-v8.jpg 1280w, images/hero/poster-1440-v8.jpg 2560w, images/hero/poster-2160-v8.jpg 3840w" imagesizes="100vw" fetchpriority="high" media="(orientation: landscape)">
     <link rel="preload" as="image" href="images/hero/poster-mobile.jpg?v=4" imagesrcset="images/hero/poster-mobile.jpg?v=4 1x, images/hero/poster-mobile-v4.jpg 2x" fetchpriority="high" media="(orientation: portrait)">
 
@@ -867,7 +885,7 @@
 
     <!-- Scripts -->
     <script src="js/main.js?v=15"></script>
-    <script src="js/hero-journey.js?v=27" defer></script>
+    <script src="js/hero-journey.js?v=28" defer></script>
     <script src="js/effects.js?v=7" defer></script>
 </body>
 </html>
