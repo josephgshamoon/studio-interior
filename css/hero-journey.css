@@ -56,12 +56,15 @@
     display: block;
 }
 
-/* In journey mode nothing shows under the poster but the stage's own
-   blurred placeholder until the engine paints: layer 1 is the finale
-   photo, and if it loaded before the poster it showed through as a flash
-   of the wrong room. Zoom mode sets every layer's opacity inline on its
-   first render; video mode keeps the finale at 0 until the dissolve. */
-.is-journey .hero-layer {
+/* With JS on, nothing shows under the poster but the stage's own blurred
+   placeholder until the engine paints: layer 1 is the finale photo, and
+   if it loaded before the poster it showed through as a flash of the
+   wrong room. Keyed on html.js (set inline in <head>, before any paint)
+   rather than .is-journey, which the deferred engine adds only after the
+   first paint. Zoom mode sets every layer's opacity inline on its first
+   render; video mode keeps the finale at 0 until the dissolve; no-JS
+   keeps the classic static hero. */
+.js .hero-journey .hero-layer {
     opacity: 0;
 }
 
@@ -86,6 +89,13 @@
 
 .hero-film[hidden] {
     display: none;
+}
+
+/* Invisible until the poster is retired on the first scroll-seek, so a
+   film that lands before the poster JPEG has decoded (warm cache) can't
+   paint its first frame ahead of it. Still decodes and seeks while hidden. */
+.hero-film.is-waiting {
+    visibility: hidden;
 }
 
 /* portrait footage on a landscape stage is shown whole, never crop-zoomed */

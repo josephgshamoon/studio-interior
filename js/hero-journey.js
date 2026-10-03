@@ -334,6 +334,7 @@
         var a = frames[ni];
         ctx.globalAlpha = 1;
         coverDraw(a);
+        canvas.hidden = false;
         drawnIndex = ni;
         hidePoster();
         if (i1 !== i0 && frac > 0.02 && loaded[i1] && frames[i1] !== a) {
@@ -486,7 +487,7 @@
         scrubVariant = variant;
         scrubBase = base;
         var v = document.createElement('video');
-        v.className = 'hero-film';
+        v.className = 'hero-film is-waiting';
         v.muted = true;
         v.playsInline = true;
         v.preload = 'auto';
@@ -504,7 +505,6 @@
             scrubVideo = null;
             scrubReady = false;
             v.hidden = true;
-            canvas.hidden = false;
             // streaming: abort the request — free the bandwidth for frames.
             // blob: let the download finish; it upgrades the still at rest.
             if (!blobMode) {
@@ -555,7 +555,9 @@
             }
             if (fellBack || !scrubReady) return;
             noteSeekLatency();
-            hidePoster(); // first seek landed: the film takes over in motion
+            // first seek landed: the film takes over in motion
+            v.classList.remove('is-waiting');
+            hidePoster();
             // a seek requested while this one was in flight was dropped —
             // settle on the frame the scroll actually rests at
             requestRender();
@@ -731,7 +733,12 @@
                 // produces visible tearing/flicker on some mobile GPUs.
                 ctx = canvas.getContext('2d', { alpha: false });
                 sizeCanvas();
-                canvas.hidden = false;
+                // The canvas stays hidden until its first real frame is
+                // drawn: an opaque context is solid black before that, and
+                // if the poster image hadn't painted yet, that black showed
+                // through as a flash between the blurred placeholder and
+                // the poster (seen on phones, where the poster is a bigger
+                // download than the manifest + boot).
                 layers.forEach(function (el, i) { el.style.display = i === finaleIndex ? '' : 'none'; });
                 finaleLayer = layers[finaleIndex] || null;
                 if (finaleLayer) {
