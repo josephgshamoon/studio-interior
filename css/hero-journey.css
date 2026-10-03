@@ -32,8 +32,12 @@
 .hero-journey .hero {
     position: sticky;
     top: 0;
+    /* dvh, not svh: the pin must track the dynamic viewport. On iPhone
+       the toolbar minimises as you scroll, the viewport grows by its
+       height, and a stage sized to the small viewport stops short of the
+       bottom - the wrapper's dark background showed through as a band. */
     height: 100vh;
-    height: 100svh;
+    height: 100dvh;
     min-height: 0;
     overflow: hidden;
 }
