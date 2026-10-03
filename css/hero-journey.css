@@ -56,8 +56,12 @@
     display: block;
 }
 
-/* Layers 2/3 hidden until the journey animates them in */
-.is-journey .hero-layer + .hero-layer {
+/* In journey mode nothing shows under the poster but the stage's own
+   blurred placeholder until the engine paints: layer 1 is the finale
+   photo, and if it loaded before the poster it showed through as a flash
+   of the wrong room. Zoom mode sets every layer's opacity inline on its
+   first render; video mode keeps the finale at 0 until the dissolve. */
+.is-journey .hero-layer {
     opacity: 0;
 }
 

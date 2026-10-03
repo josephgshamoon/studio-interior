@@ -574,7 +574,7 @@
             var pre = window.__heroFilm;
             var film = (pre && pre.url === tier.src)
                 ? pre.blob
-                : fetch(tier.src).then(function (r) {
+                : fetch(tier.src, { priority: 'low' }).then(function (r) {
                     if (!r.ok) throw new Error(String(r.status));
                     return r.blob();
                 });
